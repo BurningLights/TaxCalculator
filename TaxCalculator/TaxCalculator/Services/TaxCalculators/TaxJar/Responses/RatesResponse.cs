@@ -54,7 +54,6 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
         [DataMember(Name = "freight_taxable")]
         public bool FreightTaxable { get; set; }
 
-        [IgnoreDataMember]
         public string StreetAddress => "";
 
         [DataMember(Name = "standard_rate")]
