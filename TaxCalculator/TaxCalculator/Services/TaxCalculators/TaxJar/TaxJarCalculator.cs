@@ -58,6 +58,11 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         }
         public decimal CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping)
         {
+
+            // TODO: Address validation
+
+            // TODO: Exception handling
+
             TaxesResponseWrapper taxes = restClient.JsonPostRequestResponse<TaxesResponseWrapper>(
                 ConstructUri(TAXES_PATH), new TaxesRequest(toAddress, fromAddress, shipping, amount), getHeaders()
             );
