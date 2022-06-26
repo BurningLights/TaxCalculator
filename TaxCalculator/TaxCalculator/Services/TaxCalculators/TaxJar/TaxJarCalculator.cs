@@ -42,14 +42,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         private string ConstructUri(string fragment, string resourceParam = null)
         {
             string uri = API_ENDPOINT + fragment;
-            if (!string.IsNullOrEmpty(resourceParam))
-            {
-                return uri + $"/{resourceParam}";
-            }
-            else
-            {
-                return uri;
-            }
+            return !string.IsNullOrEmpty(resourceParam) ? uri + $"/{resourceParam}" : uri;
         }
 
         public decimal GetTaxRate(IAddress address)
