@@ -19,34 +19,25 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
         [JsonProperty("city", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string City { get; set; }
 
-        [JsonProperty("zip", Required = Required.Always)]
-        public string Zip { get; set; }
-
         [JsonProperty("street", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public string StreetAddress { get; set; }
 
-        public RatesRequest() { };
+        public RatesRequest() { }
 
-        public RatesRequest(string zip)
-        {
-            Zip = zip;
-        }
 
-        public RatesRequest(string zip, string country)
+        public RatesRequest(string country)
         {
-            Zip = zip;
             Country = country;
         }
 
-        public RatesRequest(string zip, string country, string state, string city, string streetAddress)
+        public RatesRequest(string country, string state, string city, string streetAddress)
         {
             Country = country;
             State = state;
             City = city;
-            Zip = zip;
             StreetAddress = streetAddress;
         }
 
-        public RatesRequest(IAddress address) : this(address.Zip, address.Country, address.State, address.City, address.StreetAddress) { }
+        public RatesRequest(IAddress address) : this(address.Country, address.State, address.City, address.StreetAddress) { }
     }
 }
