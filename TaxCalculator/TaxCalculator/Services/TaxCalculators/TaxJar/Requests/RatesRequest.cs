@@ -2,42 +2,47 @@
 using System.Collections.Generic;
 using System.Text;
 using TaxCalculator.Data;
-using Newtonsoft.Json;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
 {
+    [DataContract]
     internal class RatesRequest : IAddress
     {
-        [JsonProperty("country", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DataMember(Name = "country", EmitDefaultValue = false)]
         [DefaultValue("US")]
         public string Country { get; set; }
 
-        [JsonProperty("state", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "state", EmitDefaultValue = false)]
         public string State { get; set; }
 
-        [JsonProperty("city", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "city", EmitDefaultValue = false)]
         public string City { get; set; }
 
-        [JsonProperty("street", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name ="street", EmitDefaultValue = false)]
         public string StreetAddress { get; set; }
 
-        public RatesRequest() { }
+        public string Zip { get; set; }
+
+        public RatesRequest(string zip) => Zip = zip;
 
 
-        public RatesRequest(string country)
+        public RatesRequest(string zip, string country)
         {
+            Zip = zip;
             Country = country;
         }
 
-        public RatesRequest(string country, string state, string city, string streetAddress)
+        public RatesRequest(string zip, string country, string state, string city, string streetAddress)
         {
+            Zip = zip;
             Country = country;
             State = state;
             City = city;
             StreetAddress = streetAddress;
         }
 
-        public RatesRequest(IAddress address) : this(address.Country, address.State, address.City, address.StreetAddress) { }
+        public RatesRequest(IAddress address) : this(address.Zip, address.Country, address.State, address.City, address.StreetAddress) { }
     }
 }

@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     internal class TaxJurisdiction
     {
-        [JsonProperty("country")]
+        [DataMember(Name = "country")]
         public string Country { get; set; }
 
-        [JsonProperty("state")]
+        [DataMember(Name = "state")]
         public string State { get; set; }
 
-        [JsonProperty("county")]
+        [DataMember(Name = "county")]
         public string County { get; set; }
 
-        [JsonProperty("city")]
+        [DataMember(Name = "city")]
         public string City { get; set; }
     }
 }

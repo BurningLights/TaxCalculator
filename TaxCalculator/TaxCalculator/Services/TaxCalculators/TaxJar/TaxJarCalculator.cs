@@ -16,9 +16,9 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         private readonly string apiKey;
         public string ApiVersion { get; private set; }
 
-        private readonly IRestClient restClient;
+        private readonly IHttpRestClient restClient;
 
-        public TaxJarCalculator(IRestClient restClient, string apiKey, string apiVersion = null)
+        public TaxJarCalculator(IHttpRestClient restClient, string apiKey, string apiVersion = null)
         {
             this.apiKey = apiKey;
             ApiVersion = apiVersion;

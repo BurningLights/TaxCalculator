@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     internal class TaxBreakdownLineItem : TaxBreakdownBase
     {
-        [JsonProperty("id")]
+        [DataMember(Name = "id")]
         public string Id { get; set; }
     }
 }

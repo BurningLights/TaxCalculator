@@ -1,73 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
 using TaxCalculator.Data;
+using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     internal class RatesResponseWrapper
     {
-        [JsonProperty("rate")]
+        [DataMember(Name = "rate")]
         public RatesResponse Rate { get; set; }
     }
+
+    [DataContract]
     internal class RatesResponse : IAddress
     {
-        [JsonProperty("country")]
+        [DataMember(Name = "country")]
         public string Country { get; set; }
 
-        [JsonProperty("name")]
+        [DataMember(Name = "name")]
         public string CountryName { get; set; }
 
-        [JsonProperty("country_rate")]
+        [DataMember(Name = "country_rate")]
         public decimal CountryRate { get; set; }
 
-        [JsonProperty("state")]
+        [DataMember(Name = "state")]
         public string State { get; set; }
 
-        [JsonProperty("state_rate")]
+        [DataMember(Name = "state_rate")]
         public decimal StateRate { get; set; }
 
-        [JsonProperty("county")]
+        [DataMember(Name = "county")]
         public string County { get; set; }
 
-        [JsonProperty("county_rate")]
+        [DataMember(Name = "county_rate")]
         public decimal CountyRate { get; set; }
 
-        [JsonProperty("city")]
+        [DataMember(Name = "city")]
         public string City { get; set; }
 
-        [JsonProperty("city_rate")]
+        [DataMember(Name = "city_rate")]
         public decimal CityRate { get; set; }
 
-        [JsonProperty("combined_district_rate")]
+        [DataMember(Name = "combined_district_rate")]
         public decimal TotalDistrictRate { get; set; }
 
-        [JsonProperty("zip")]
+        [DataMember(Name = "zip")]
         public string Zip { get; set; }
 
-        [JsonProperty("combined_rate")]
+        [DataMember(Name = "combined_rate")]
         public decimal TotalTaxRate { get; set; }
 
-        [JsonProperty("freight_taxable")]
+        [DataMember(Name = "freight_taxable")]
         public bool FreightTaxable { get; set; }
 
-        [JsonIgnore]
+        [IgnoreDataMember]
         public string StreetAddress => "";
 
-        [JsonProperty("standard_rate")]
+        [DataMember(Name = "standard_rate")]
         public decimal StandardRate { get; set; }
 
-        [JsonProperty("reduced_rate")]
+        [DataMember(Name = "reduced_rate")]
         public decimal ReducedRate { get; set; }
 
-        [JsonProperty("super_reduced_rate")]
+        [DataMember(Name = "super_reduced_rate")]
         public decimal SuperReducedRate { get; set; }
 
-        [JsonProperty("parking_rate")]
+        [DataMember(Name = "parking_rate")]
         public decimal ParkingRate { get; set; }
 
-        [JsonProperty("distance_sale_threshold")]
+        [DataMember(Name = "distance_sale_threshold")]
         public decimal DistanceSaleThreshold { get; set; }
     }
 }

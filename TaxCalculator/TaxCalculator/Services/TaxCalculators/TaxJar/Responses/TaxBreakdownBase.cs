@@ -1,94 +1,88 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     internal class TaxBreakdownBase
     {
-        [JsonProperty("taxable_amount")]
+        [DataMember(Name = "taxable_amount")]
         public decimal TaxableAmount { get; set; }
 
-        [JsonProperty("tax_collectable")]
+        [DataMember(Name = "tax_collectable")]
         public decimal TaxCollectable { get; set; }
 
-        [JsonProperty("combined_tax_rate")]
+        [DataMember(Name = "combined_tax_rate")]
         public decimal CombinedTaxRate { get; set; }
 
-        [JsonProperty("state_taxable_amount")]
+        [DataMember(Name = "state_taxable_amount")]
         public decimal StateTaxableAmount { get; set; }
 
-        [JsonProperty("state_tax_rate")]
+        [DataMember(Name = "state_tax_rate")]
         public decimal StateTaxRate { get; set; }
 
-        [JsonProperty("state_tax_collectable")]
+        [DataMember(Name = "state_tax_collectable")]
         public decimal StateTaxCollectable { get; set; }
 
-        [JsonProperty("county_taxable_amount")]
+        [DataMember(Name = "county_taxable_amount")]
         public decimal CountyTaxableAmount { get; set; }
 
-        [JsonProperty("county_tax_rate")]
+        [DataMember(Name = "county_tax_rate")]
         public decimal CountyTaxRate { get; set; }
 
-        [JsonProperty("county_tax_collectable")]
+        [DataMember(Name = "county_tax_collectable")]
         public decimal CountyTaxCollectable { get; set; }
 
-        [JsonProperty("city_taxable_amount")]
+        [DataMember(Name = "city_taxable_amount")]
         public decimal CityTaxableAmount { get; set; }
 
-        [JsonProperty("city_tax_rate")]
+        [DataMember(Name = "city_tax_rate")]
         public decimal CityTaxRate { get; set; }
 
-        [JsonProperty("city_tax_collectable")]
+        [DataMember(Name = "city_tax_collectable")]
         public decimal CityTaxCollectable { get; set; }
 
-        [JsonProperty("special_district_taxable_amount")]
+        [DataMember(Name = "special_district_taxable_amount")]
         public decimal SpecialDistrictTaxableAmount { get; set; }
 
-        [JsonProperty("special_tax_rate")]
+        [DataMember(Name = "special_tax_rate")]
         public decimal SpecialTaxRate { get; set; }
 
-        [JsonProperty("special_district_tax_collectable")]
+        [DataMember(Name = "special_district_tax_collectable")]
         public decimal SpecialDistrictTaxCollectable { get; set; }
 
-        [JsonProperty("gst_taxable_amount")]
+        [DataMember(Name = "gst_taxable_amount")]
         public decimal GstTaxableAmount { get; set; }
 
-        [JsonProperty("gst_tax_rate")]
+        [DataMember(Name = "gst_tax_rate")]
         public decimal GstTaxRate { get; set; }
 
-        [JsonProperty("gst")]
+        [DataMember(Name = "gst")]
         public decimal Gst { get; set; }
 
-        [JsonProperty("pst_taxable_amount")]
+        [DataMember(Name = "pst_taxable_amount")]
         public decimal PstTaxableAmount { get; set; }
 
-        [JsonProperty("pst_tax_rate")]
+        [DataMember(Name = "pst_tax_rate")]
         public decimal PstTaxRate { get; set; }
 
-        [JsonProperty("pst")]
+        [DataMember(Name = "pst")]
         public decimal Pst { get; set; }
 
-        [JsonProperty("qst_taxable_amount")]
+        [DataMember(Name = "qst_taxable_amount")]
         public decimal QstTaxableAmount { get; set; }
 
-        [JsonProperty("qst_tax_rate")]
+        [DataMember(Name = "qst_tax_rate")]
         public decimal QstTaxRate { get; set; }
 
-        [JsonProperty("qst")]
+        [DataMember(Name = "qst")]
         public decimal Qst { get; set; }
 
-        [JsonProperty("country_taxable_amount")]
+        [DataMember(Name = "country_taxable_amount")]
         public decimal CountryTaxableAmount { get; set; }
 
-        [JsonProperty("country_tax_rate")]
+        [DataMember(Name = "country_tax_rate")]
         public decimal CountryTaxRate { get; set; }
 
-        [JsonProperty("country_tax_collectable")]
+        [DataMember(Name = "country_tax_collectable")]
         public decimal CountryTaxCollectable { get; set; }
-
-        // TODO: Shipping and line items
-
     }
 }

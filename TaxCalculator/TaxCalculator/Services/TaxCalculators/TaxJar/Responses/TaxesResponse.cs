@@ -1,48 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json;
+﻿using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     internal class TaxesResponseWrapper
     {
-        [JsonProperty("tax")]
+        [DataMember(Name = "tax")]
         public TaxesResponse Tax { get; set; }
     }
     internal class TaxesResponse
     {
-        [JsonProperty("order_total_amount")]
+        [DataMember(Name = "order_total_amount")]
         public decimal OrderTotal { get; set; }
 
-        [JsonProperty("shipping")]
+        [DataMember(Name = "shipping")]
         public decimal Shipping { get; set; }
 
-        [JsonProperty("taxable_amount")]
+        [DataMember(Name = "taxable_amount")]
         public decimal TaxableAmount { get; set; }
 
-        [JsonProperty("amount_to_collect")]
+        [DataMember(Name = "amount_to_collect")]
         public decimal TaxToCollect { get; set; }
 
-        [JsonProperty("rate")]
+        [DataMember(Name = "rate")]
         public decimal TaxRate { get; set; }
 
-        [JsonProperty("has_nexus")]
+        [DataMember(Name = "has_nexus")]
         public decimal HasNexus { get; set; }
 
-        [JsonProperty("freight_taxable")]
+        [DataMember(Name = "freight_taxable")]
         public decimal FreightTaxable { get; set; }
 
-        [JsonProperty("tax_source")]
+        [DataMember(Name = "tax_source")]
         public string TaxSource { get; set; }
 
-        [JsonProperty("exemption_type")]
+        [DataMember(Name = "exemption_type")]
         public string ExemptionType { get; set; }
 
-        [JsonProperty("jurisdications")]
+        [DataMember(Name = "jurisdications")]
         public TaxJurisdiction Jurisdictions { get; set; }
 
-        [JsonProperty("breakdown")]
+        [DataMember(Name = "breakdown")]
         public FullTaxBreakdown Breakdown { get; set; }
     }
 }

@@ -1,53 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
 using TaxCalculator.Data;
+using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
 {
+    [DataContract]
     internal class TaxesRequest
     {
-        [JsonProperty("from_country", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "from_country", EmitDefaultValue = false)]
         public string FromCountry { get; set; }
 
-        [JsonProperty("from_zip", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "from_zip", EmitDefaultValue = false)]
         public string FromZip { get; set; }
 
-        [JsonProperty("from_state", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "from_state", EmitDefaultValue = false)]
         public string FromState { get; set; }
 
-        [JsonProperty("from_city", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "from_city", EmitDefaultValue = false)]
         public string FromCity { get; set; }
 
-        [JsonProperty("from_street", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "from_street", EmitDefaultValue = false)]
         public string FromStreet { get; set; }
 
-        [JsonProperty("to_country", Required = Required.Always)]
+        [DataMember(Name = "to_country", IsRequired = true)]
         public string ToCountry { get; set; }
 
-        [JsonProperty("to_zip", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "to_zip", EmitDefaultValue = false)]
         public string ToZip { get; set; }
 
-        [JsonProperty("to_state", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "to_state", EmitDefaultValue = false)]
         public string ToState { get; set; }
 
-        [JsonProperty("to_city", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "to_city", EmitDefaultValue = false)]
         public string ToCity { get; set; }
 
-        [JsonProperty("to_street", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "to_street", EmitDefaultValue = false)]
         public string ToStreet { get; set; }
 
-        [JsonProperty("amount", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "amount", EmitDefaultValue = false)]
         public decimal Amount { get; set; }
 
-        [JsonProperty("shipping", Required = Required.Always)]
+        [DataMember(Name = "shipping", IsRequired = true)]
         public decimal Shipping { get; set; }
 
-        [JsonProperty("customer_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "customer_id", EmitDefaultValue = false)]
         public string CustomerId { get; set; }
 
-        [JsonProperty("exemption_type", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [DataMember(Name = "exemption_type", EmitDefaultValue = false)]
         public string ExemptionType { get; set; }
 
         public TaxesRequest() { }
