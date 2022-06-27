@@ -100,7 +100,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         {
             try
             {
-                jsonConverter.DeserializeObject<Dictionary<string, string>>(jsonConverter.SerializeObject(request));
+                return jsonConverter.DeserializeObject<Dictionary<string, string>>(jsonConverter.SerializeObject(request));
             }
             catch (JsonConversionException ex)
             {
