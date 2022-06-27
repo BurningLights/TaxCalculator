@@ -1,8 +1,7 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
     internal class RestHttpClientResponse : IHttpRestResponse
     {
@@ -10,7 +9,7 @@ namespace TaxCalculator.Services.Rest
 
         public bool IsSuccess => httpResponse.IsSuccessStatusCode;
 
-        public string CodeReaseon => httpResponse.ReasonPhrase;
+        public string CodeReason => httpResponse.ReasonPhrase;
 
         private readonly HttpResponseMessage httpResponse;
 

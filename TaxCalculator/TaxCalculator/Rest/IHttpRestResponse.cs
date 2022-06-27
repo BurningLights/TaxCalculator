@@ -1,12 +1,12 @@
 ﻿using System.Threading.Tasks;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
     internal interface IHttpRestResponse
     {
         int StatusCode { get; }
         bool IsSuccess { get; }
-        string CodeReaseon { get; }
+        string CodeReason { get; }
 
 
         Task<string> GetBodyAsync();

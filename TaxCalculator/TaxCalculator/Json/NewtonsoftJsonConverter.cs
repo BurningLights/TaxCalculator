@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
+using TaxCalculator.Services.Json;
 
-namespace TaxCalculator.Services.Json
+namespace TaxCalculator.Json
 {
     internal class NewtonsoftJsonConverter : IJsonConverter
     {

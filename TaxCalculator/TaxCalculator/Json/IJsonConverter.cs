@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TaxCalculator.Services.Json
+namespace TaxCalculator.Json
 {
     internal interface IJsonConverter
     {

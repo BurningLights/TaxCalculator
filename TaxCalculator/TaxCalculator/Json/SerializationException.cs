@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TaxCalculator.Services.Json
+namespace TaxCalculator.Json
 {
 
     [Serializable]
-    public class SerializationException : Exception
+    public class SerializationException : JsonConversionException
     {
         public SerializationException() { }
         public SerializationException(string message) : base(message) { }

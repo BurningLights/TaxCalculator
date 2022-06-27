@@ -6,7 +6,7 @@ namespace TaxCalculator.Services
 {
 
     [Serializable]
-    public class ServiceConfigurationException : Exception
+    public class ServiceConfigurationException : ServiceException
     {
         public ServiceConfigurationException() { }
         public ServiceConfigurationException(string message) : base(message) { }

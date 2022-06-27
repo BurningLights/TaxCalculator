@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TaxCalculator.Services.Json
+namespace TaxCalculator.Json
 {
 
     [Serializable]
-    public class DeserializationException : Exception
+    public class DeserializationException : JsonConversionException
     {
         public DeserializationException() { }
         public DeserializationException(string message) : base(message) { }

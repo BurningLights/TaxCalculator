@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
 
     [Serializable]
-    public class RequestTimeoutException : Exception
+    public class RequestTimeoutException : RequestException
     {
         public RequestTimeoutException() { }
         public RequestTimeoutException(string message) : base(message) { }

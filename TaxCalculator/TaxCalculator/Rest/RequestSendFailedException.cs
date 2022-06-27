@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
 
     [Serializable]
-    public class RequestSendFailedException : Exception
+    public class RequestSendFailedException : RequestException
     {
         public RequestSendFailedException() { }
         public RequestSendFailedException(string message) : base(message) { }

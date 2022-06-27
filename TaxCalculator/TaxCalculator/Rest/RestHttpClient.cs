@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
-using System.Collections.Specialized;
 using System.Linq;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
     internal class RestHttpClient : IHttpRestClient
     {
@@ -40,11 +39,11 @@ namespace TaxCalculator.Services.Rest
             return uri;
         }
 
-        private async Task<IHttpRestResponse> HandleExceptions(HttpRequestMessage request)
+        private async Task<IHttpRestResponse> PerformRequest(HttpRequestMessage request)
         {
             try
             {
-                return new RestHttpClientResponse(await httpClient.SendAsync(request));
+                return new RestHttpClientResponse(await httpClient.SendAsync(request).ConfigureAwait(false));
             }
             catch (HttpRequestException ex)
             {
@@ -64,13 +63,13 @@ namespace TaxCalculator.Services.Rest
         {
             HttpRequestMessage request = ConstructRequest(uri, HttpMethod.Post, headers);
             request.Content = new StringContent(requestBodyJson);
-            return await HandleExceptions(request);
+            return await PerformRequest(request).ConfigureAwait(false);
         }
         public async Task<IHttpRestResponse> GetJsonResponse(string uri, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
         {
             uri = AddQueryParameters(uri, parameters);
             HttpRequestMessage request = ConstructRequest(uri, HttpMethod.Get, headers);
-            return await HandleExceptions(request);
+            return await PerformRequest(request).ConfigureAwait(false);
         }
     }
 }

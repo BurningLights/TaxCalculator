@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
     internal interface IHttpRestClient
     {

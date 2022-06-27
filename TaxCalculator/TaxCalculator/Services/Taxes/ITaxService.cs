@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using TaxCalculator.Data;
 
 namespace TaxCalculator.Services.Taxes
 {
     internal interface ITaxService
     {
-        decimal GetTaxRate(IAddress address, ICustomer customer = null);
-        decimal CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping, ICustomer customer = null);
+        Task<decimal> GetTaxRate(IAddress address, ICustomer customer = null);
+        Task<decimal> CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping, ICustomer customer = null);
 
-        IList<string> SupportedCountries(ICustomer customer = null);
+        IEnumerable<string> SupportedCountries(ICustomer customer = null);
     }
 }

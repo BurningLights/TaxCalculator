@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace TaxCalculator.Services.Rest
+namespace TaxCalculator.Rest
 {
 
     [Serializable]
-    public class RequestConnectivityException : Exception
+    public class RequestConnectivityException : RequestException
     {
         public RequestConnectivityException() { }
         public RequestConnectivityException(string message) : base(message) { }
