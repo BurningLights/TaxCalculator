@@ -25,14 +25,15 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         private static readonly string[] nonCountryCodes = new string[] { "A", "AB", "ABC" };
         private static readonly string[] unsupportedCountryCodes = new string[] { "BR", "EG", "CN" };
 
+        private static object?[] NullStringToObjectArray(string? input) => new object?[] { input };
         private static object[] StringToObjectArray(string input) => new object[] { input };
 
         private static IEnumerable<string> GetAllExpectedCountries() => expectedNonEuCountries.Concat(expectedEuCountries);
         private static IEnumerable<object[]> AllExpectedCountriesData() => GetAllExpectedCountries().Select(StringToObjectArray);
         private static IEnumerable<object[]> ExpectedEuCountriesData() => expectedEuCountries.Select(StringToObjectArray);
         private static IEnumerable<object[]> NonEuCountriesData() => expectedNonEuCountries.Select(StringToObjectArray);
-        private static IEnumerable<object[]> InvalidCountryCodesDataIncludeBlank() => nonCountryCodes.Append("").Select(StringToObjectArray);
-        private static IEnumerable<object[]> InvalidCountryCodesData() => nonCountryCodes.Where(x => x != "").Select(StringToObjectArray);
+        private static IEnumerable<object?[]> InvalidCountryCodesDataIncludeEmptyValues() => nonCountryCodes.Append("").Append(null).Select(NullStringToObjectArray);
+        private static IEnumerable<object[]> InvalidCountryCodesData() => nonCountryCodes.Select(StringToObjectArray);
         private static IEnumerable<object[]> UnsupportedCountryCodesData() => unsupportedCountryCodes.Select(StringToObjectArray);
 
         private static TaxJarCalculator CalculatorWithStubs() 
@@ -291,7 +292,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        [DynamicData(nameof(InvalidCountryCodesDataIncludeBlank), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(InvalidCountryCodesDataIncludeEmptyValues), DynamicDataSourceType.Method)]
         public void IsCountryEu_InvalidCountry_ReturnsFalse(string country)
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
@@ -309,7 +310,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        [DynamicData(nameof(InvalidCountryCodesDataIncludeBlank), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(InvalidCountryCodesDataIncludeEmptyValues), DynamicDataSourceType.Method)]
         public void IsValidCountry_InvalidCountry_ReturnsFalse(string country)
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
