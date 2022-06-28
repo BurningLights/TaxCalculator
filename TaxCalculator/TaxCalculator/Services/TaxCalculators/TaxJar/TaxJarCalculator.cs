@@ -9,7 +9,7 @@ using TaxCalculator.Rest;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar
 {
-    internal class TaxJarCalculator : ITaxCalculator
+    public class TaxJarCalculator : ITaxCalculator
     {
         const string API_ENDPOINT = "https://api.taxjar.com/v2/";
         const string TAXES_PATH = "taxes";
@@ -148,7 +148,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         }
 
 
-        public async Task<decimal> GetTaxRate(IAddress address)
+        private void ValidateTaxRateInput(IAddress address)
         {
             if (string.IsNullOrEmpty(address?.Zip))
             {
@@ -162,6 +162,11 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             {
                 throw new ServiceInputException($"The address State {address.State} is invalid. It must be a 2-letter state code");
             }
+        }
+
+        public async Task<decimal> GetTaxRate(IAddress address)
+        {
+            ValidateTaxRateInput(address);
 
             IDictionary<string, string> parameters = RatesRequestToParameterDict(new RatesRequest(address));
 
@@ -191,12 +196,17 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             }
         }
 
-        public async Task<decimal> CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping)
+        private void ValidateCalculateTaxesInput(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping)
         {
             if (string.IsNullOrEmpty(toAddress?.Country))
             {
-                throw new ServiceInputException("The To Address Country is required"); 
+                throw new ServiceInputException("The To Address Country is required");
             }
+        }
+
+        public async Task<decimal> CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping)
+        {
+            ValidateCalculateTaxesInput(fromAddress, toAddress, amount, shipping);
 
             string requestBody;
             try

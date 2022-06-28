@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaxCalculator.Data
 {
-    internal interface IAddress
+    public interface IAddress
     {
         string Country { get; }
         string State { get; }

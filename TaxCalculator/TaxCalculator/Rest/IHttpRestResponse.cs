@@ -2,7 +2,7 @@
 
 namespace TaxCalculator.Rest
 {
-    internal interface IHttpRestResponse
+    public interface IHttpRestResponse
     {
         int StatusCode { get; }
         bool IsSuccess { get; }

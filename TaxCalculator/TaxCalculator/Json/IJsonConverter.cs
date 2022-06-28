@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaxCalculator.Json
 {
-    internal interface IJsonConverter
+    public interface IJsonConverter
     {
         string SerializeObject(object obj);
         T DeserializeObject<T>(string json);

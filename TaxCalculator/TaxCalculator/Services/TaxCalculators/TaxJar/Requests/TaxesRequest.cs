@@ -65,10 +65,10 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
             ToState = toAddress.State;
             ToCity = toAddress.City;
             ToZip = toAddress.Zip;
-            FromCountry = fromAddress.Country;
-            FromState = fromAddress.State;
-            FromCity = fromAddress.City;
-            FromZip = fromAddress.Zip;
+            FromCountry = fromAddress?.Country;
+            FromState = fromAddress?.State;
+            FromCity = fromAddress?.City;
+            FromZip = fromAddress?.Zip;
             Shipping = shipping;
             Amount = amount;
         }
