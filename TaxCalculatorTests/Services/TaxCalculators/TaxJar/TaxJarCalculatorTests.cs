@@ -22,7 +22,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         };
         private static readonly string[] expectedNonEuCountries = new string[] { "US", "CA", "AU" };
 
-        private static readonly string[] nonCountryCodes = new string[] { "", "A", "AB", "ABC" };
+        private static readonly string[] nonCountryCodes = new string[] { "A", "AB", "ABC" };
         private static readonly string[] unsupportedCountryCodes = new string[] { "BR", "EG", "CN" };
 
         private static object[] StringToObjectArray(string input) => new object[] { input };
@@ -31,7 +31,8 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         private static IEnumerable<object[]> AllExpectedCountriesData() => GetAllExpectedCountries().Select(StringToObjectArray);
         private static IEnumerable<object[]> ExpectedEuCountriesData() => expectedEuCountries.Select(StringToObjectArray);
         private static IEnumerable<object[]> NonEuCountriesData() => expectedNonEuCountries.Select(StringToObjectArray);
-        private static IEnumerable<object[]> InvalidCountryCodesData() => nonCountryCodes.Select(StringToObjectArray);
+        private static IEnumerable<object[]> InvalidCountryCodesDataIncludeBlank() => nonCountryCodes.Append("").Select(StringToObjectArray);
+        private static IEnumerable<object[]> InvalidCountryCodesData() => nonCountryCodes.Where(x => x != "").Select(StringToObjectArray);
         private static IEnumerable<object[]> UnsupportedCountryCodesData() => unsupportedCountryCodes.Select(StringToObjectArray);
 
         private static TaxJarCalculator CalculatorWithStubs() 
@@ -43,57 +44,57 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 
         #region GetTaxRate
         [TestMethod()]
-        public void GetTaxRate_NullToAddress_ThrowsServiceInputException()
+        public async Task GetTaxRate_NullToAddress_ThrowsServiceInputException()
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
-            Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(null));
+            await Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(null));
         }
 
         [TestMethod()]
-        public void GetTaxRate_NullToCountry_ThrowsServiceInputException()
+        public async Task GetTaxRate_NullToZip_ThrowsServiceInputException()
         {
-            TaxJarCalculator calculator = CalculatorWithStubs();
+           TaxJarCalculator calculator = CalculatorWithStubs();
             IAddress addressStub = Mock.Of<IAddress>(
-                address => address.Country == null && address.City == "Test" && address.State == "MD" && address.Zip == "21045" && address.StreetAddress == "123 E Main St"
+                address => address.Country == "US" && address.City == "Test" && address.State == "MD" && address.Zip == null && address.StreetAddress == "123 E Main St"
             );
 
-            Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
+            await Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
         }
 
         [TestMethod()]
-        public void GetTaxRate_UnsupportedToCountry_ThrowsServiceInputException()
+        public async Task GetTaxRate_UnsupportedToCountry_ThrowsServiceInputException()
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
             IAddress addressStub = Mock.Of<IAddress>(
                 address => address.Country == "BR" && address.City == "Test" && address.State == "MD" && address.Zip == "21045" && address.StreetAddress == "123 E Main St"
             );
 
-            Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
+            await Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
         }
 
         [TestMethod()]
         [DynamicData(nameof(InvalidCountryCodesData), DynamicDataSourceType.Method)]
-        public void GetTaxRate_InvalidToCountry_ThrowsServiceInputException(string countryCode)
+        public async Task GetTaxRate_InvalidToCountry_ThrowsServiceInputException(string countryCode)
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
             IAddress addressStub = Mock.Of<IAddress>(
                 address => address.Country == countryCode && address.City == "Test" && address.State == "MD" && address.Zip == "21045" && address.StreetAddress == "123 E Main St"
             );
 
-            Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
+            await Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
         }
 
         [TestMethod()]
         [DataRow("A")]
         [DataRow("ABC")]
-        public void GetTaxRate_WrongStateLength_ThrowsServiceInputException(string invalidState)
+        public async Task GetTaxRate_WrongStateLength_ThrowsServiceInputException(string invalidState)
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
             IAddress addressStub = Mock.Of<IAddress>(
                 address => address.Country == "US" && address.City == "Test" && address.State == invalidState && address.Zip == "21045" && address.StreetAddress == "123 E Main St"
             );
 
-            Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
+            await Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.GetTaxRate(addressStub));
         }
 
         [TestMethod()]
@@ -139,10 +140,13 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        public void GetTaxRate_ZipOnly_UsTaxDecimal()
+        [DataRow("")]
+        [DataRow(null)]
+        public void GetTaxRate_ZipOnly_UsTaxDecimal(string? otherElements)
         {
             Assert.Fail();
         }
+
 
         [TestMethod()]
         public void GetTaxRate_NonEuAddress_CorrectDecimal()
@@ -287,7 +291,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        [DynamicData(nameof(InvalidCountryCodesData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(InvalidCountryCodesDataIncludeBlank), DynamicDataSourceType.Method)]
         public void IsCountryEu_InvalidCountry_ReturnsFalse(string country)
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
@@ -305,7 +309,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        [DynamicData(nameof(InvalidCountryCodesData), DynamicDataSourceType.Method)]
+        [DynamicData(nameof(InvalidCountryCodesDataIncludeBlank), DynamicDataSourceType.Method)]
         public void IsValidCountry_InvalidCountry_ReturnsFalse(string country)
         {
             TaxJarCalculator calculator = CalculatorWithStubs();
