@@ -96,16 +96,27 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             return !string.IsNullOrEmpty(resourceParam) ? uri + $"/{resourceParam}" : uri;
         }
 
-        private IDictionary<string, string> RatesRequestToParameterDict(RatesRequest request)
+        private IDictionary<string, string> AddressToRatesParameterDict(IAddress request)
         {
-            try
+            IDictionary<string, string> parameters = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(request.Country))
             {
-                return jsonConverter.DeserializeObject<Dictionary<string, string>>(jsonConverter.SerializeObject(request));
+                parameters.Add("country", request.Country);
             }
-            catch (JsonConversionException ex)
+            if (!string.IsNullOrEmpty(request.State))
             {
-                throw new ServiceInternalException("Error converting RatesRequest to parameter dictionary", ex);
+                parameters.Add("state", request.State);
             }
+            if (!string.IsNullOrEmpty(request.City))
+            {
+                parameters.Add("city", request.City);
+            }
+            if (!string.IsNullOrEmpty(request.StreetAddress))
+            {
+                parameters.Add("street", request.StreetAddress);
+            }
+
+            return parameters;
         }
 
         private async Task RaiseResponseExceptions(IHttpRestResponse response)
@@ -168,7 +179,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         {
             ValidateTaxRateInput(address);
 
-            IDictionary<string, string> parameters = RatesRequestToParameterDict(new RatesRequest(address));
+            IDictionary<string, string> parameters = AddressToRatesParameterDict(address);
 
             IHttpRestResponse response;
             try

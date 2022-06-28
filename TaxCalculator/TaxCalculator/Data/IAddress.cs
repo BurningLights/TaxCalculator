@@ -6,10 +6,10 @@ namespace TaxCalculator.Data
 {
     public interface IAddress
     {
-        string Country { get; }
-        string State { get; }
-        string City { get; }
-        string Zip { get; }
-        string StreetAddress { get; }
+        string? Country { get; }
+        string? State { get; }
+        string? City { get; }
+        string? Zip { get; }
+        string? StreetAddress { get; }
     }
 }
