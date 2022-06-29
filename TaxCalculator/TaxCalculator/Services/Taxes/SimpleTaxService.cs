@@ -7,7 +7,7 @@ using TaxCalculator.Services.TaxCalculators;
 
 namespace TaxCalculator.Services.Taxes
 {
-    internal class SimpleTaxService : ITaxService
+    public class SimpleTaxService : ITaxService
     {
         private ITaxCalculator taxCalculator;
 

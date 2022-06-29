@@ -2,7 +2,7 @@
 
 namespace TaxCalculator.Json
 {
-    internal class NewtonsoftJsonConverter : IJsonConverter
+    public class NewtonsoftJsonConverter : IJsonConverter
     {
         public T? DeserializeObject<T>(string json) where T : class
         {

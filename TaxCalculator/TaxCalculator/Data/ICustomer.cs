@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TaxCalculator.Data
 {
-    internal interface ICustomer
+    public interface ICustomer
     {
     }
 }

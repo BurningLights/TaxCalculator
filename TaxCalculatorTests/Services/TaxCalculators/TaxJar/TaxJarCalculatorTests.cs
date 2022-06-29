@@ -337,6 +337,14 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
+        [DataRow(null)]
+        [DataRow("2022-01-24")]
+        public async Task GetTaxRate_TestHeaders(string? version)
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod()]
         [DataRow("")]
         [DataRow(null)]
         public async Task GetTaxRate_ZipOnly_UsTaxDecimal(string? otherElements)
@@ -718,6 +726,15 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         {
             Assert.Fail();
         }
+
+        [TestMethod()]
+        [DataRow(null)]
+        [DataRow("2022-01-24")]
+        public async Task CalculateTaxes_TestHeaders(string? version)
+        {
+            Assert.Fail();
+        }
+
 
         [TestMethod()]
         public void CalculateTaxes_ToUsAddress_CorrectDecimal()

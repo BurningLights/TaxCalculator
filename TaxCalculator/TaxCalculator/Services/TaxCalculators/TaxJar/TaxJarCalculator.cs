@@ -164,7 +164,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         }
 
 
-        private void ValidateTaxRateInput(IAddress address)
+        private void ThrowExceptionForInvalidGetTaxRateInput(IAddress address)
         {
             if (string.IsNullOrEmpty(address.Zip))
             {
@@ -178,7 +178,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
 
         public async Task<decimal> GetTaxRate(IAddress address)
         {
-            ValidateTaxRateInput(address);
+            ThrowExceptionForInvalidGetTaxRateInput(address);
 
             IDictionary<string, string> parameters = AddressToRatesParameterDict(address);
 
@@ -204,7 +204,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             }
         }
 
-        private void ValidateCalculateTaxesInput(IAddress? fromAddress, IAddress toAddress)
+        private void ThrowExceptionForInvalidCalculateTaxesInput(IAddress? fromAddress, IAddress toAddress)
         {
             if (string.IsNullOrEmpty(toAddress.Country))
             {
@@ -230,7 +230,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
 
         public async Task<decimal> CalculateTaxes(IAddress? fromAddress, IAddress toAddress, decimal amount, decimal shipping)
         {
-            ValidateCalculateTaxesInput(fromAddress, toAddress);
+            ThrowExceptionForInvalidCalculateTaxesInput(fromAddress, toAddress);
 
             string requestBody;
             try
