@@ -9,7 +9,7 @@ namespace TaxCalculator.Services.TaxCalculators
     internal interface ITaxCalculator
     {
         Task<decimal> GetTaxRate(IAddress address);
-        Task<decimal> CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping);
+        Task<decimal> CalculateTaxes(IAddress? fromAddress, IAddress toAddress, decimal amount, decimal shipping);
         IEnumerable<string> SupportedCountries();
     }
 }

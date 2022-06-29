@@ -16,7 +16,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         const string RATES_PATH = "rates";
 
         private readonly string apiKey;
-        public string ApiVersion { get; private set; }
+        public string? ApiVersion { get; private set; }
 
         private readonly IHttpRestClient restClient;
         private readonly IJsonConverter jsonConverter;
@@ -68,7 +68,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
         
         #endregion
 
-        public TaxJarCalculator(IHttpRestClient restClient, IJsonConverter jsonConverter, string apiKey, string apiVersion = null)
+        public TaxJarCalculator(IHttpRestClient restClient, IJsonConverter jsonConverter, string apiKey, string? apiVersion = null)
         {
             this.apiKey = apiKey;
             ApiVersion = apiVersion;
@@ -90,28 +90,28 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             return headers;
         }
 
-        private string ConstructUri(string fragment, string resourceParam = null)
+        private string ConstructUri(string fragment, string? resourceParam = null)
         {
             string uri = API_ENDPOINT + fragment;
             return !string.IsNullOrEmpty(resourceParam) ? uri + $"/{resourceParam}" : uri;
         }
 
-        private IDictionary<string, string> AddressToRatesParameterDict(IAddress request)
+        private IDictionary<string, string> AddressToRatesParameterDict(IAddress? request)
         {
             IDictionary<string, string> parameters = new Dictionary<string, string>();
-            if (!string.IsNullOrEmpty(request.Country))
+            if (!string.IsNullOrEmpty(request?.Country))
             {
                 parameters.Add("country", request.Country);
             }
-            if (!string.IsNullOrEmpty(request.State))
+            if (!string.IsNullOrEmpty(request?.State))
             {
                 parameters.Add("state", request.State);
             }
-            if (!string.IsNullOrEmpty(request.City))
+            if (!string.IsNullOrEmpty(request?.City))
             {
                 parameters.Add("city", request.City);
             }
-            if (!string.IsNullOrEmpty(request.StreetAddress))
+            if (!string.IsNullOrEmpty(request?.StreetAddress))
             {
                 parameters.Add("street", request.StreetAddress);
             }
@@ -133,24 +133,29 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
                 }
                 else
                 {
+                    string errorMessage = $"Request failed with error: {response.StatusCode} - {response.CodeReason}";
                     try
                     {
-                        ErrorResponse detail = jsonConverter.DeserializeObject<ErrorResponse>(await response.GetBodyAsync().ConfigureAwait(false));
-                        throw new ServiceInternalException($"Request failed with error: {detail.ErrorName} - {detail.Detail}");
+                        ErrorResponse? detail = jsonConverter.DeserializeObject<ErrorResponse>(await response.GetBodyAsync().ConfigureAwait(false));
+                        if (detail != null)
+                        {
+                            errorMessage = $"Request failed with error: {detail.ErrorName} - {detail.Detail}";
+                        }
                     }
                     catch (DeserializationException)
                     {
-                        throw new ServiceInternalException($"Request failed with error: {response.StatusCode} - {response.CodeReason}");
                     }
+                    throw new ServiceInternalException(errorMessage);
                 }
             }
         }
 
-        private async Task<T> DecodeResponseBody<T>(IHttpRestResponse response)
+        private async Task<T> DecodeResponseBody<T>(IHttpRestResponse response) where T : class
         {
             try
             {
-                return jsonConverter.DeserializeObject<T>(await response.GetBodyAsync().ConfigureAwait(false));
+                T? deserialized = jsonConverter.DeserializeObject<T>(await response.GetBodyAsync().ConfigureAwait(false));
+                return deserialized ?? throw new ServiceInternalException("Received null as API response");
             }
             catch (DeserializationException ex)
             {
@@ -161,17 +166,13 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
 
         private void ValidateTaxRateInput(IAddress address)
         {
-            if (string.IsNullOrEmpty(address?.Zip))
+            if (string.IsNullOrEmpty(address.Zip))
             {
                 throw new ServiceInputException("The address Zip is required");
             }
             if (!string.IsNullOrEmpty(address.Country) && !IsValidCountry(address.Country))
             {
                 throw new ServiceInputException($"The address Country {address.Country} is not a supported country");
-            }
-            if (!string.IsNullOrEmpty(address.State) && address.State.Length != 2)
-            {
-                throw new ServiceInputException($"The address State {address.State} is invalid. It must be a 2-letter state code");
             }
         }
 
@@ -193,31 +194,43 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             await RaiseResponseExceptions(response).ConfigureAwait(false);
             RatesResponseWrapper decodedResponse = await DecodeResponseBody<RatesResponseWrapper>(response).ConfigureAwait(false);
 
-            if (IsCountryEu(decodedResponse.Rate.Country))
-            {
-                return decodedResponse.Rate.StandardRate;
-            }
-            else if (IsValidCountry(decodedResponse.Rate.County))
+            if (decodedResponse.Rate.Country == null || !IsCountryEu(decodedResponse.Rate.Country))
             {
                 return decodedResponse.Rate.TotalTaxRate;
             }
             else
             {
-                throw new ServiceInternalException($"The API returned an unknown country code of {decodedResponse.Rate.Country}");
+                return decodedResponse.Rate.StandardRate;
             }
         }
 
-        private void ValidateCalculateTaxesInput(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping)
+        private void ValidateCalculateTaxesInput(IAddress? fromAddress, IAddress toAddress)
         {
-            if (string.IsNullOrEmpty(toAddress?.Country))
+            if (string.IsNullOrEmpty(toAddress.Country))
             {
                 throw new ServiceInputException("The To Address Country is required");
             }
+            if (!IsValidCountry(toAddress.Country))
+            {
+                throw new ServiceInputException($"The To Address Country {toAddress.Country} is not a supported country");
+            }
+            if (!(string.IsNullOrEmpty(fromAddress?.Country) || IsValidCountry(fromAddress.Country)))
+            {
+                throw new ServiceInputException($"The From Address Country {fromAddress.Country} is not a supported country");
+            }
+            if (toAddress.Country == UNITED_STATES && string.IsNullOrEmpty(toAddress.Zip))
+            {
+                throw new ServiceInputException($"The To Address Zip Code is required when the country is {UNITED_STATES}");
+            }
+            if ((toAddress.Country == UNITED_STATES || toAddress.Country == CANADA) && string.IsNullOrEmpty(toAddress.State))
+            {
+                throw new ServiceInputException($"The To Address State is required when the country is {UNITED_STATES} or {CANADA}");
+            }
         }
 
-        public async Task<decimal> CalculateTaxes(IAddress fromAddress, IAddress toAddress, decimal amount, decimal shipping)
+        public async Task<decimal> CalculateTaxes(IAddress? fromAddress, IAddress toAddress, decimal amount, decimal shipping)
         {
-            ValidateCalculateTaxesInput(fromAddress, toAddress, amount, shipping);
+            ValidateCalculateTaxesInput(fromAddress, toAddress);
 
             string requestBody;
             try

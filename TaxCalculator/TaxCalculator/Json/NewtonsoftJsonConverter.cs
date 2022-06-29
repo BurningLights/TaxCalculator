@@ -4,7 +4,7 @@ namespace TaxCalculator.Json
 {
     internal class NewtonsoftJsonConverter : IJsonConverter
     {
-        public T DeserializeObject<T>(string json)
+        public T? DeserializeObject<T>(string json) where T : class
         {
             try
             {
@@ -15,7 +15,7 @@ namespace TaxCalculator.Json
                 throw new DeserializationException("Could not deserialize JSON to object", ex);
             }
         }
-        public string SerializeObject(object obj)
+        public string SerializeObject(object? obj)
         {
             try
             {

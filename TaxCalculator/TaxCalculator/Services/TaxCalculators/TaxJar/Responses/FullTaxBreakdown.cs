@@ -8,9 +8,9 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
     internal class FullTaxBreakdown : TaxBreakdownBase
     {
         [DataMember(Name = "shipping")]
-        public TaxBreakdownBase ShippingBreakdown { get; set; }
+        public TaxBreakdownBase ShippingBreakdown { get; set; } = new TaxBreakdownBase();
 
         [DataMember(Name = "line_items")]
-        public List<TaxBreakdownLineItem> LineItemBreakdowns { get; set; }
+        public List<TaxBreakdownLineItem> LineItemBreakdowns { get; set; } = new List<TaxBreakdownLineItem>();
     }
 }

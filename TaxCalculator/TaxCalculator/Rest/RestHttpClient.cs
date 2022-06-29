@@ -11,7 +11,7 @@ namespace TaxCalculator.Rest
         private static readonly HttpClient httpClient = new HttpClient();
 
 
-        private HttpRequestMessage ConstructRequest(string uri, HttpMethod method, IEnumerable<KeyValuePair<string, string>> headers = null)
+        private HttpRequestMessage ConstructRequest(string uri, HttpMethod method, IEnumerable<KeyValuePair<string, string>>? headers = null)
         {
             HttpRequestMessage request = new HttpRequestMessage(method, uri);
 
@@ -26,7 +26,7 @@ namespace TaxCalculator.Rest
             return request;
         }
 
-        private string AddQueryParameters(string uri, IEnumerable<KeyValuePair<string, string>> parameters)
+        private string AddQueryParameters(string uri, IEnumerable<KeyValuePair<string, string>>? parameters)
         {
             if (parameters != null)
             {
@@ -59,13 +59,13 @@ namespace TaxCalculator.Rest
             }
         }
 
-        public async Task<IHttpRestResponse> JsonPostJsonResponse(string uri, string requestBodyJson, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<IHttpRestResponse> JsonPostJsonResponse(string uri, string requestBodyJson, IEnumerable<KeyValuePair<string, string>>? headers = null)
         {
             HttpRequestMessage request = ConstructRequest(uri, HttpMethod.Post, headers);
             request.Content = new StringContent(requestBodyJson);
             return await PerformRequest(request).ConfigureAwait(false);
         }
-        public async Task<IHttpRestResponse> GetJsonResponse(string uri, IEnumerable<KeyValuePair<string, string>> parameters = null, IEnumerable<KeyValuePair<string, string>> headers = null)
+        public async Task<IHttpRestResponse> GetJsonResponse(string uri, IEnumerable<KeyValuePair<string, string>>? parameters = null, IEnumerable<KeyValuePair<string, string>>? headers = null)
         {
             uri = AddQueryParameters(uri, parameters);
             HttpRequestMessage request = ConstructRequest(uri, HttpMethod.Get, headers);

@@ -5,7 +5,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
     internal class TaxesResponseWrapper
     {
         [DataMember(Name = "tax")]
-        public TaxesResponse Tax { get; set; }
+        public TaxesResponse Tax { get; set; } = new TaxesResponse();
     }
     internal class TaxesResponse
     {
@@ -31,15 +31,15 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
         public decimal FreightTaxable { get; set; }
 
         [DataMember(Name = "tax_source")]
-        public string TaxSource { get; set; }
+        public string TaxSource { get; set; } = "";
 
         [DataMember(Name = "exemption_type")]
-        public string ExemptionType { get; set; }
+        public string? ExemptionType { get; set; }
 
         [DataMember(Name = "jurisdications")]
-        public TaxJurisdiction Jurisdictions { get; set; }
+        public TaxJurisdiction Jurisdictions { get; set; } = new TaxJurisdiction();
 
         [DataMember(Name = "breakdown")]
-        public FullTaxBreakdown Breakdown { get; set; }
+        public FullTaxBreakdown Breakdown { get; set; } = new FullTaxBreakdown();
     }
 }

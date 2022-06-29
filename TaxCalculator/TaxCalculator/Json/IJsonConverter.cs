@@ -6,7 +6,7 @@ namespace TaxCalculator.Json
 {
     public interface IJsonConverter
     {
-        string SerializeObject(object obj);
-        T DeserializeObject<T>(string json);
+        string SerializeObject(object? obj);
+        T? DeserializeObject<T>(string json) where T : class;
     }
 }

@@ -6,38 +6,38 @@ using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
-    internal class RatesResponseWrapper
+    public class RatesResponseWrapper
     {
         [DataMember(Name = "rate")]
-        public RatesResponse Rate { get; set; }
+        public RatesResponse Rate { get; set; } = new RatesResponse();  
     }
 
     [DataContract]
-    internal class RatesResponse : IAddress
+    public class RatesResponse : IAddress
     {
         [DataMember(Name = "country")]
-        public string Country { get; set; }
+        public string? Country { get; set; }
 
         [DataMember(Name = "name")]
-        public string CountryName { get; set; }
+        public string? CountryName { get; set; }
 
         [DataMember(Name = "country_rate")]
         public decimal CountryRate { get; set; }
 
         [DataMember(Name = "state")]
-        public string State { get; set; }
+        public string? State { get; set; }
 
         [DataMember(Name = "state_rate")]
         public decimal StateRate { get; set; }
 
         [DataMember(Name = "county")]
-        public string County { get; set; }
+        public string? County { get; set; }
 
         [DataMember(Name = "county_rate")]
         public decimal CountyRate { get; set; }
 
         [DataMember(Name = "city")]
-        public string City { get; set; }
+        public string? City { get; set; }
 
         [DataMember(Name = "city_rate")]
         public decimal CityRate { get; set; }
@@ -46,7 +46,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
         public decimal TotalDistrictRate { get; set; }
 
         [DataMember(Name = "zip")]
-        public string Zip { get; set; }
+        public string? Zip { get; set; }
 
         [DataMember(Name = "combined_rate")]
         public decimal TotalTaxRate { get; set; }

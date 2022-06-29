@@ -5,6 +5,6 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
     internal class TaxBreakdownLineItem : TaxBreakdownBase
     {
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public string Id { get; set; } = "";
     }
 }
