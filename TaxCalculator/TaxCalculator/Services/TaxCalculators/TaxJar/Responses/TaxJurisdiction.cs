@@ -2,6 +2,7 @@
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
+    [DataContract]
     internal class TaxJurisdiction
     {
         [DataMember(Name = "country")]

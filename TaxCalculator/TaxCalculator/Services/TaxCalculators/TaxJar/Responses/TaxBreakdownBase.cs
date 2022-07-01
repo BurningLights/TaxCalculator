@@ -2,6 +2,7 @@
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
+    [DataContract]
     internal class TaxBreakdownBase
     {
         [DataMember(Name = "taxable_amount")]

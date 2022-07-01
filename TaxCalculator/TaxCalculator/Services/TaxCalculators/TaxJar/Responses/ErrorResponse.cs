@@ -2,6 +2,7 @@
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
+    [DataContract]
     public class ErrorResponse
     {
         [DataMember(Name = "error")]

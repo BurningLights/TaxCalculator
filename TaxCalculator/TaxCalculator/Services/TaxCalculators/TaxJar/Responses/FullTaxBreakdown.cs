@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
+    [DataContract]
     internal class FullTaxBreakdown : TaxBreakdownBase
     {
         [DataMember(Name = "shipping")]

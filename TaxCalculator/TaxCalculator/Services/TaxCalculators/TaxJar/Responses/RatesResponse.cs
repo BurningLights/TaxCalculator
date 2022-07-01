@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
+    [DataContract]
     public class RatesResponseWrapper
     {
         [DataMember(Name = "rate")]
