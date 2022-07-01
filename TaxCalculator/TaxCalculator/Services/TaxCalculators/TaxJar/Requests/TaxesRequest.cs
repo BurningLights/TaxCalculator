@@ -65,7 +65,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
             Shipping = shipping;
         }
 
-        public TaxesRequest(IAddress? fromAddress, IAddress toAddress, decimal shipping, decimal amount) 
+        public TaxesRequest(IAddress? fromAddress, IAddress toAddress, decimal amount, decimal shipping) 
         {
             ToCountry = toAddress.Country ?? "";
             ToState = toAddress.State;

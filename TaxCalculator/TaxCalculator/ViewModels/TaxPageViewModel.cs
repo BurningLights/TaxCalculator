@@ -77,14 +77,13 @@ namespace TaxCalculator.ViewModels
             this.taxService = taxService;
             CalculateCommand = new Command(
                 async () => {
+                    StatusMessage = "Calculating taxes...";
 
                     try
                     {
                         Task<decimal> originTaxes = taxService.GetTaxRate(FromAddress);
                         Task<decimal> destTaxes = taxService.GetTaxRate(ToAddress);
                         Task<decimal> taxToCollect = taxService.CalculateTaxes(FromAddress, ToAddress, SubTotal, Shipping);
-
-                        StatusMessage = "Calculating taxes...";
 
                         try
                         {

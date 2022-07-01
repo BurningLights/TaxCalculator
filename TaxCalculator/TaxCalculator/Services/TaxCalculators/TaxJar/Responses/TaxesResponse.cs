@@ -25,13 +25,13 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
         public decimal TaxRate { get; set; }
 
         [DataMember(Name = "has_nexus")]
-        public decimal HasNexus { get; set; }
+        public bool HasNexus { get; set; }
 
         [DataMember(Name = "freight_taxable")]
-        public decimal FreightTaxable { get; set; }
+        public bool FreightTaxable { get; set; }
 
         [DataMember(Name = "tax_source")]
-        public string TaxSource { get; set; } = "";
+        public string? TaxSource { get; set; }
 
         [DataMember(Name = "exemption_type")]
         public string? ExemptionType { get; set; }

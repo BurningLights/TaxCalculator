@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using TaxCalculator.Data;
-using TaxCalculator.Services.TaxCalculators.TaxJar.Requests;
-using TaxCalculator.Services.TaxCalculators.TaxJar.Responses;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TaxCalculator.Data;
 using TaxCalculator.Json;
 using TaxCalculator.Rest;
+using TaxCalculator.Services.TaxCalculators.TaxJar.Requests;
+using TaxCalculator.Services.TaxCalculators.TaxJar.Responses;
 
 namespace TaxCalculator.Services.TaxCalculators.TaxJar
 {

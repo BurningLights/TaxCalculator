@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Net.Http;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace TaxCalculator.Rest
 {
@@ -61,9 +63,8 @@ namespace TaxCalculator.Rest
 
         public async Task<IHttpRestResponse> JsonPostJsonResponse(string uri, string requestBodyJson, IEnumerable<KeyValuePair<string, string>>? headers = null)
         {
-            headers = headers.Append(new KeyValuePair<string, string>("Content-Type", "application/json"));
             HttpRequestMessage request = ConstructRequest(uri, HttpMethod.Post, headers);
-            request.Content = new StringContent(requestBodyJson);
+            request.Content = new StringContent(requestBodyJson, Encoding.UTF8, "application/json");
             return await PerformRequest(request).ConfigureAwait(false);
         }
         public async Task<IHttpRestResponse> GetJsonResponse(string uri, IEnumerable<KeyValuePair<string, string>>? parameters = null, IEnumerable<KeyValuePair<string, string>>? headers = null)
