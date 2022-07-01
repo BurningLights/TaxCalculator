@@ -61,6 +61,7 @@ namespace TaxCalculator.Rest
 
         public async Task<IHttpRestResponse> JsonPostJsonResponse(string uri, string requestBodyJson, IEnumerable<KeyValuePair<string, string>>? headers = null)
         {
+            headers = headers.Append(new KeyValuePair<string, string>("Content-Type", "application/json"));
             HttpRequestMessage request = ConstructRequest(uri, HttpMethod.Post, headers);
             request.Content = new StringContent(requestBodyJson);
             return await PerformRequest(request).ConfigureAwait(false);

@@ -4,6 +4,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TaxCalculator.Services.Taxes;
+using TaxCalculator.ViewModels;
 using Xamarin.Forms;
 
 namespace TaxCalculator
@@ -13,6 +15,8 @@ namespace TaxCalculator
         public MainPage()
         {
             InitializeComponent();
+
+            BindingContext = new TaxPageViewModel(DependencyService.Get<ITaxService>());
         }
     }
 }
