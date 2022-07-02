@@ -13,6 +13,7 @@
         </Style>
         <Style TargetType="Button">
             <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="BackgroundColor" Value="LightBlue" />
         </Style>
         <Style TargetType="Frame">
             <Setter Property="BorderColor" Value="LightGray" />

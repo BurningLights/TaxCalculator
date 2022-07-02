@@ -91,8 +91,10 @@ namespace TaxCalculator.ViewModels
             ErrorMessage = "";
         }
 
-        private bool FromAddressHasRequired() => FromAddress.Country != null && FromAddress.City != null && FromAddress.Zip != null && FromAddress.StreetAddress != null;
-        private bool ToAddressHasRequired() => ToAddress.Country != null && ToAddress.City != null && ToAddress.Zip != null && ToAddress.StreetAddress != null;
+        private bool FromAddressHasRequired() => !string.IsNullOrEmpty(FromAddress.Country) && !string.IsNullOrEmpty(FromAddress.City) && 
+            !string.IsNullOrEmpty(FromAddress.Zip) && !string.IsNullOrEmpty(FromAddress.StreetAddress);
+        private bool ToAddressHasRequired() => !string.IsNullOrEmpty(ToAddress.Country) && !string.IsNullOrEmpty(ToAddress.City) &&
+            !string.IsNullOrEmpty(ToAddress.Zip) && !string.IsNullOrEmpty(ToAddress.StreetAddress);
 
         public TaxPageViewModel(ITaxService taxService)
         {
@@ -108,23 +110,24 @@ namespace TaxCalculator.ViewModels
                         Task<decimal> destTaxes = taxService.GetTaxRate(ToAddress);
                         Task<decimal> taxToCollect = taxService.CalculateTaxes(FromAddress, ToAddress, SubTotal, Shipping);
 
-                        try
-                        {
-                            OriginTaxRate = await originTaxes;
-                            DestinationTaxRate = await destTaxes;
-                            Taxes = await taxToCollect;
-                        }
-                        catch (ServiceException ex)
-                        {
-                            Debug.WriteLine(ex);
-                            ErrorMessage = "Calculating taxes failed. Please check that your addresses are valid.";
-                        }
+                        decimal originRate = await originTaxes;
+                        decimal destRate = await destTaxes;
+                        decimal totalTax = await taxToCollect;
+
+                        OriginTaxRate = originRate;
+                        DestinationTaxRate = destRate;
+                        Taxes = totalTax;
                     }
                     catch (ServiceInputException ex)
                     {
                         ErrorMessage = ex.Message;
                     }
-                    
+                    catch (ServiceException ex)
+                    {
+                        Debug.WriteLine(ex);
+                        ErrorMessage = "Calculating taxes failed. Please check that your addresses are valid.";
+                    }
+
                     IsPending = false;
                     (CalculateCommand as Command)?.ChangeCanExecute();
                 },
