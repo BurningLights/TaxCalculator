@@ -76,14 +76,7 @@ namespace TaxCalculator.ViewModels
         public bool IsPending
         {
             get => isPending;
-            set
-            {
-                bool hasChanged = SetPropertyValue(ref isPending, value);
-                if (hasChanged)
-                {
-                    (CalculateCommand as Command)?.ChangeCanExecute();
-                }
-            }
+            set => SetPropertyValue(ref isPending, value);
         }
 
         public IList<string> Countries => taxService.SupportedCountries().ToList();
@@ -107,6 +100,8 @@ namespace TaxCalculator.ViewModels
             CalculateCommand = new Command(
                 async () => {
                     IsPending = true;
+                    (CalculateCommand as Command)?.ChangeCanExecute();
+
                     try
                     {
                         Task<decimal> originTaxes = taxService.GetTaxRate(FromAddress);
@@ -115,28 +110,23 @@ namespace TaxCalculator.ViewModels
 
                         try
                         {
-                            OriginTaxRate = await originTaxes.ConfigureAwait(false);
-                            DestinationTaxRate = await destTaxes.ConfigureAwait(false);
-                            Taxes = await taxToCollect.ConfigureAwait(false);
+                            OriginTaxRate = await originTaxes;
+                            DestinationTaxRate = await destTaxes;
+                            Taxes = await taxToCollect;
                         }
                         catch (ServiceException ex)
                         {
                             Debug.WriteLine(ex);
-                            ErrorMessage = "Calculating taxes failed. Please try again later.";
-                        }
-                        finally
-                        {
-                            IsPending = false;
+                            ErrorMessage = "Calculating taxes failed. Please check that your addresses are valid.";
                         }
                     }
                     catch (ServiceInputException ex)
                     {
                         ErrorMessage = ex.Message;
                     }
-                    finally
-                    {
-                        IsPending = false;
-                    }
+                    
+                    IsPending = false;
+                    (CalculateCommand as Command)?.ChangeCanExecute();
                 },
                 () => FromAddressHasRequired() && ToAddressHasRequired() && !IsPending
             );

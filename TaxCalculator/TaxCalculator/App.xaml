@@ -7,5 +7,15 @@
             <Setter Property="TextColor" Value="Red" />
             <Setter Property="PlaceholderColor" Value="Red" />
         </Style>
+        <Style x:Key="FrameHeader" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="FontSize" Value="Medium" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+        <Style TargetType="Frame">
+            <Setter Property="BorderColor" Value="LightGray" />
+        </Style>
     </Application.Resources>
 </Application>
