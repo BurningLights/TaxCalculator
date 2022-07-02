@@ -304,7 +304,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 && response.GetBodyAsync().Result == ValidUsRateResponseBody);
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -321,7 +321,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         public async Task GetTaxRate_RestHttpClient_RequestException_ThrowsServiceInternalException()
         {
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ThrowsAsync(new RequestException());
 
@@ -348,7 +348,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -377,7 +377,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -403,7 +403,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -446,7 +446,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             IHttpRestResponse response = ValidResponse(responseBody);
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>?>(val => val == null || !val.Any()),
                 It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
@@ -502,7 +502,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 {"street", street}
             };
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
                 It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, version))
             )).ReturnsAsync(response);
@@ -549,7 +549,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 {"street", street}
             };
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
                 It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
@@ -595,7 +595,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 {"street", street}
             };
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
                 It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
@@ -640,7 +640,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 {"street", street}
             };
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.GetJsonResponse(
+            restClientMock.Setup(client => client.GetRequest(
                 string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
                 It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
@@ -853,7 +853,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 && response.GetBodyAsync().Result == responseBody);
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.JsonPostJsonResponse(
+            restClientMock.Setup(client => client.JsonPostRequest(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -886,7 +886,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.JsonPostJsonResponse(
+            restClientMock.Setup(client => client.JsonPostRequest(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ThrowsAsync(new RequestException());
 
@@ -927,7 +927,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.JsonPostJsonResponse(
+            restClientMock.Setup(client => client.JsonPostRequest(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -973,7 +973,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.JsonPostJsonResponse(
+            restClientMock.Setup(client => client.JsonPostRequest(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 
@@ -1015,7 +1015,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             );
 
             Mock<IHttpRestClient> restClientMock = new();
-            restClientMock.Setup(client => client.JsonPostJsonResponse(
+            restClientMock.Setup(client => client.JsonPostRequest(
                 It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ReturnsAsync(response);
 

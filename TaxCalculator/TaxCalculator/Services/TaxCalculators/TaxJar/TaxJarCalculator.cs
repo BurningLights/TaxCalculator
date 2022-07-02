@@ -186,7 +186,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             IHttpRestResponse response;
             try
             {
-                response = await restClient.GetJsonResponse(ConstructUri(RATES_PATH, address.Zip), parameters, GetHeaders()).ConfigureAwait(false);
+                response = await restClient.GetRequest(ConstructUri(RATES_PATH, address.Zip), parameters, GetHeaders()).ConfigureAwait(false);
             }
             catch (RequestException ex)
             {
@@ -250,7 +250,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             IHttpRestResponse response;
             try
             {
-                response = await restClient.JsonPostJsonResponse(ConstructUri(TAXES_PATH), requestBody, GetHeaders()).ConfigureAwait(false);
+                response = await restClient.JsonPostRequest(ConstructUri(TAXES_PATH), requestBody, GetHeaders()).ConfigureAwait(false);
             }
             catch (RequestException ex)
             {
