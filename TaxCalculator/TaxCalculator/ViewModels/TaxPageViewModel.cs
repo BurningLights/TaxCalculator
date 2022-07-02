@@ -21,10 +21,12 @@ namespace TaxCalculator.ViewModels
         private decimal? originTaxRate;
         private decimal? destinationTaxRate;
         private decimal? taxes;
-        private string statusMessage = "";
+        private string errorMessage = "";
+        private bool isPending = false;
 
         public AddressViewModel FromAddress { get; } = new AddressViewModel();
         public AddressViewModel ToAddress { get; } = new AddressViewModel();
+
         public decimal Shipping
         {
             get => shipping;
@@ -42,6 +44,7 @@ namespace TaxCalculator.ViewModels
                 ResetTaxInfo();
             }
         }
+
         public decimal? OriginTaxRate { get => originTaxRate; set => SetPropertyValue(ref originTaxRate, value); }
         public decimal? DestinationTaxRate { get => destinationTaxRate; set => SetPropertyValue(ref destinationTaxRate, value); }
         public decimal? Taxes { 
@@ -56,7 +59,33 @@ namespace TaxCalculator.ViewModels
             }
         }
         public decimal? GrandTotal => taxes == null ? null : shipping + subTotal + taxes;
-        public string StatusMessage { get => statusMessage; set => SetPropertyValue(ref statusMessage, value); }
+
+        public string ErrorMessage { 
+            get => errorMessage;
+            set
+            {
+                string oldMessage = errorMessage;
+                SetPropertyValue(ref errorMessage, value);
+                if (string.IsNullOrEmpty(oldMessage) != string.IsNullOrEmpty(value))
+                {
+                    RaisePropertyChanged(nameof(HasError));
+                }
+            } 
+        }
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool IsPending
+        {
+            get => isPending;
+            set
+            {
+                bool hasChanged = SetPropertyValue(ref isPending, value);
+                if (hasChanged)
+                {
+                    (CalculateCommand as Command)?.ChangeCanExecute();
+                }
+            }
+        }
+
         public IList<string> Countries => taxService.SupportedCountries().ToList();
 
         public ICommand CalculateCommand { get; private set; }
@@ -66,7 +95,7 @@ namespace TaxCalculator.ViewModels
             Taxes = null;
             OriginTaxRate = null;
             DestinationTaxRate = null;
-            StatusMessage = "";
+            ErrorMessage = "";
         }
 
         private bool FromAddressHasRequired() => FromAddress.Country != null && FromAddress.City != null && FromAddress.Zip != null && FromAddress.StreetAddress != null;
@@ -77,8 +106,7 @@ namespace TaxCalculator.ViewModels
             this.taxService = taxService;
             CalculateCommand = new Command(
                 async () => {
-                    StatusMessage = "Calculating taxes...";
-
+                    IsPending = true;
                     try
                     {
                         Task<decimal> originTaxes = taxService.GetTaxRate(FromAddress);
@@ -90,20 +118,27 @@ namespace TaxCalculator.ViewModels
                             OriginTaxRate = await originTaxes.ConfigureAwait(false);
                             DestinationTaxRate = await destTaxes.ConfigureAwait(false);
                             Taxes = await taxToCollect.ConfigureAwait(false);
-                            StatusMessage = "";
                         }
                         catch (ServiceException ex)
                         {
                             Debug.WriteLine(ex);
-                            StatusMessage = "Calculating taxes failed. Please try again later.";
+                            ErrorMessage = "Calculating taxes failed. Please try again later.";
+                        }
+                        finally
+                        {
+                            IsPending = false;
                         }
                     }
                     catch (ServiceInputException ex)
                     {
-                        StatusMessage = ex.Message;
+                        ErrorMessage = ex.Message;
+                    }
+                    finally
+                    {
+                        IsPending = false;
                     }
                 },
-                () => FromAddressHasRequired() && ToAddressHasRequired()
+                () => FromAddressHasRequired() && ToAddressHasRequired() && !IsPending
             );
             FromAddress.PropertyChanged += OnAddressChanged;
             ToAddress.PropertyChanged += OnAddressChanged;

@@ -15,7 +15,6 @@ namespace TaxCalculator
         public MainPage()
         {
             InitializeComponent();
-
             BindingContext = new TaxPageViewModel(DependencyService.Get<ITaxService>());
         }
     }

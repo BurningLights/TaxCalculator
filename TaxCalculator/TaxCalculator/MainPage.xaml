@@ -4,6 +4,22 @@
              xmlns:xct="http://xamarin.com/schemas/2020/toolkit" xmlns:viewmodels="clr-namespace:TaxCalculator.ViewModels" x:DataType="viewmodels:TaxPageViewModel"
              x:Class="TaxCalculator.MainPage"
              Title="Tax Calculator">
+    <ContentPage.Resources>
+        <Style TargetType="Entry">
+            <Style.Triggers>
+                <DataTrigger TargetType="Entry" Binding="{Binding Path=IsPending}" Value="true">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Picker">
+            <Style.Triggers>
+                <DataTrigger TargetType="Picker" Binding="{Binding Path=IsPending}" Value="true">
+                    <Setter Property="IsEnabled" Value="False" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </ContentPage.Resources>
     <ScrollView>
         <StackLayout>
             <Frame>
@@ -70,8 +86,19 @@
                     </Entry>
                 </Grid>
             </Frame>
-            <Button Text="Calculate" Command="{Binding CalculateCommand}" />
-            <Label Text="{Binding Path=StatusMessage}"></Label>
+            <Frame>
+                <StackLayout>
+                    <Button Text="Calculate" Command="{Binding CalculateCommand}" Grid.Row="0">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding Path=IsPending}" Value="true">
+                                <Setter Property="Text" Value="Calculating..." />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                    <ActivityIndicator IsRunning="{Binding Path=IsPending}" IsVisible="{Binding Path=IsPending}" />
+                    <Label Text="{Binding Path=ErrorMessage}" TextColor="Red" Grid.Row="1" IsVisible="{Binding Path=HasError}" />
+                </StackLayout>
+            </Frame>
             <Frame>
                 <Grid>
                     <Grid.ColumnDefinitions>
