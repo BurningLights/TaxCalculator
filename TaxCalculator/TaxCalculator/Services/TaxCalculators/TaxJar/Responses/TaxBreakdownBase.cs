@@ -3,7 +3,7 @@
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     [DataContract]
-    internal class TaxBreakdownBase
+    public class TaxBreakdownBase
     {
         [DataMember(Name = "taxable_amount")]
         public decimal TaxableAmount { get; set; }

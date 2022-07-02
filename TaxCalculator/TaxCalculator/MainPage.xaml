@@ -76,7 +76,7 @@
                         <Label Grid.Row="0" Grid.Column="0" Text="Subtotal ($)" HorizontalTextAlignment="End" VerticalTextAlignment="Center" />
                         <Entry Grid.Row="0" Grid.Column="1" Keyboard="Numeric" Text="{Binding Path=SubTotal}">
                             <Entry.Behaviors>
-                                <xct:NumericValidationBehavior MaximumDecimalPlaces="2" MinimumValue="0" InvalidStyle="{StaticResource InvalidEntryStyle}" />
+                                <xct:NumericValidationBehavior MaximumDecimalPlaces="2" MinimumValue="0.01" InvalidStyle="{StaticResource InvalidEntryStyle}" />
                             </Entry.Behaviors>
                         </Entry>
                         <Label Grid.Row="1" Grid.Column="0" Text="Shipping ($)" HorizontalTextAlignment="End" VerticalTextAlignment="Center" />

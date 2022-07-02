@@ -62,6 +62,9 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             }";
 
         private const string ratesUri = "https://api.taxjar.com/v2/rates/{0}";
+        private const string taxesUri = "https://api.taxjar.com/v2/taxes";
+        private const string apiKey = "9e0cd62a22f451701f29c3bde214";
+        private const string version = "2022-01-24";
         #endregion
 
         #region Helpers
@@ -80,8 +83,8 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 
         private static TaxJarCalculator CalculatorWithStubs() 
         {
-            IHttpRestClient restClientStub = Mock.Of<IHttpRestClient>(MockBehavior.Strict);
-            IJsonConverter jsonConverterStub = Mock.Of<IJsonConverter>(MockBehavior.Strict);
+            IHttpRestClient restClientStub = Mock.Of<IHttpRestClient>();
+            IJsonConverter jsonConverterStub = Mock.Of<IJsonConverter>();
             return new(restClientStub, jsonConverterStub, "");
         }
 
@@ -90,7 +93,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         private static string UsRateResponseJson(string zip, string state, decimal stateRate, string county, decimal countyRate, string city, 
             decimal cityRate, decimal combinedDistrictRate, decimal combinedRate, bool freightTaxable)
         {
-            return @$"{{
+            return @$"{{""rate"": {{
 ""zip"": ""{zip}"",
 ""state"": ""{state}"",
 ""state_rate"": ""{stateRate}"",
@@ -101,13 +104,13 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 ""combined_district_rate"": ""{combinedDistrictRate}"",
 ""combined_rate"": ""{combinedRate}"",
 ""freight_taxable"": ""{freightTaxable}"",
-}}";
+}}}}";
         }
 
         private static string UsRateResponseWithCountry(string zip, string country, decimal countryRate, string state, decimal stateRate, string county, decimal countyRate, string city,
             decimal cityRate, decimal combinedDistrictRate, decimal combinedRate, bool freightTaxable)
         {
-            return @$"{{
+            return @$"{{""rate"": {{
 ""zip"": ""{zip}"",
 ""country"": ""{country}"",
 ""countryRate"": ""{countryRate}"",
@@ -120,37 +123,37 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 ""combined_district_rate"": ""{combinedDistrictRate}"",
 ""combined_rate"": ""{combinedRate}"",
 ""freight_taxable"": ""{freightTaxable}"",
-}}";
+}}}}";
 
         }
 
         private static string CaRateResponseJson(string zip, string city, string state, string country, decimal combinedRate, bool freightTaxable)
         {
-            return @$"{{
+            return @$"{{""rate"": {{
 ""zip"": ""{zip}"",
 ""city"": ""{city}"",
 ""state"": ""{state}"",
 ""country"": ""{country}"",
 ""combined_rate"": ""{combinedRate}"",
 ""freight_taxable"": ""{freightTaxable}"",
-}}";
+}}}}";
         }
 
         private static string AuRateResponseJson(string zip, string country, decimal countryRate, decimal combinedRate, bool freightTaxable)
         {
-            return @$"{{
+            return @$"{{""rate"": {{
 ""zip"": ""{zip}"",
 ""country"": ""{country}"",
 ""country_rate"": ""{countryRate}"",
 ""combined_rate"": ""{combinedRate}"",
 ""freight_taxable"": ""{freightTaxable}"",
-}}";
+}}}}";
         }
 
         private static string EuRateResponseJson(string country, string name, decimal standardRate, decimal reducedRate, decimal superReducedRate, decimal parkingRate, 
             decimal distanceSaleThreshold, bool freightTaxable)
         {
-            return @$"{{
+            return @$"{{""rate"": {{
 ""country"": ""{country}"",
 ""name"": ""{name}"",
 ""standard_rate"": ""{standardRate}"",
@@ -159,13 +162,96 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 ""parking_rate"": ""{parkingRate}"",
 ""distance_sale_threshold"": ""{distanceSaleThreshold}"",
 ""freight_taxable"": ""{freightTaxable}"",
+}}}}";
+        }
+
+        private static string TaxesRequestJson(string fromCountry, string fromZip, string? fromState, string fromCity, string fromStreet, 
+            string toZip, string? toState, string toCity, string toStreet, decimal amount, decimal shipping)
+        {
+            StringBuilder states = new();
+            if (fromState != null)
+            {
+                states.Append($",\n\"from_state\": \"{fromState}\"");
+            }
+            if (toState != null)
+            {
+                states.Append($",\n\"to_state\": \"{toState}\"");
+            }
+
+            return $@"{{
+""from_country"": ""{fromCountry}"",
+""from_zip"": ""{fromZip}"",
+""from_city"": ""{fromCity}"",
+""from_street"": ""{fromStreet}"",
+""to_country"": ""{fromCountry}"",
+""to_zip"": ""{toZip}"",
+""to_city"": ""{toCity}"",
+""to_street"": ""{toStreet}"",
+""amount"": {amount},
+""shipping"": {shipping}{states}
 }}";
+        }
+
+        private static string TaxesResponseJson(decimal orderTotal, decimal shipping, decimal amountToCollect, bool hasNexus, bool freightTaxable, string? taxSource, 
+            string country, string? state = null, string? county = null, string? city = null)
+        {
+            decimal taxableAmount = freightTaxable ? orderTotal + shipping : orderTotal;
+            decimal rate = amountToCollect / taxableAmount;
+
+            StringBuilder jurisdications = new($"{{\"country\": \"{country}\"");
+            if (state != null)
+            {
+                jurisdications.Append($", \"state\": \"{state}\"");
+            }
+            if (county != null)
+            {
+                jurisdications.Append($", \"county\": \"{county}\"");
+            }
+            if (city != null)
+            {
+                jurisdications.Append($", \"city\": \"{city}\"");
+            }
+            jurisdications.Append("}");
+
+            return @$"{{""tax"": {{
+""order_total_amount"": {orderTotal},
+""shipping"": {shipping},
+""taxable_amount"": {taxableAmount},
+""amount_to_collect"": {amountToCollect},
+""rate"": {rate},
+""hax_nexus"": {hasNexus},
+""freight_taxable"": {freightTaxable},
+""tax_source"": {taxSource ?? "null"},
+""jurisdications"": {jurisdications}
+}}}}";
         }
 
         private static IHttpRestResponse ValidResponse(string body) => Mock.Of<IHttpRestResponse>(
             response => response.IsSuccess == true && response.StatusCode == 200 && response.CodeReason == "OK" &&
             response.GetBodyAsync().Result == body
         );
+
+        private static bool CheckParametersExpected(IEnumerable<KeyValuePair<string, string>> parameters, IDictionary<string, string> expected)
+        {
+            return parameters.Count() == expected.Count && parameters.Intersect(expected).Count() == expected.Count;
+        }
+
+        private static bool CheckHeadersExpected(IEnumerable<KeyValuePair<string, string>> parameters, string apiKey, string? version = null)
+        {
+            string tokenAuthHeader = $"Token token=\"{apiKey}\"";
+            string bearerAuthHeader = $"Bearer {apiKey}";
+            bool hasHeaders = parameters.Where(val => val.Key == "Authorization" && (val.Value == tokenAuthHeader || val.Value == bearerAuthHeader)).Any();
+            if (version == null)
+            {
+                hasHeaders &= !parameters.Where(val => val.Key == "x-api-version").Any();
+            }
+            else
+            {
+                hasHeaders &= parameters.Where(val => val.Key == "x-api-version" && val.Value == version).Any();
+            }
+
+            return hasHeaders;
+        }
 
         #endregion
 
@@ -228,7 +314,6 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 
             TaxJarCalculator calculator = new(restClientMock.Object, jsonConverterMock.Object, "");
 
-
             await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.GetTaxRate(addressStub));
         }
 
@@ -240,7 +325,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
             )).ThrowsAsync(new RequestException());
 
-            IJsonConverter converterStub = Mock.Of<IJsonConverter>(MockBehavior.Strict);
+            IJsonConverter converterStub = Mock.Of<IJsonConverter>();
 
             IAddress addressStub = Mock.Of<IAddress>(
                 address => address.Country == "US" && address.City == "Santa Monica" && address.State == "CA" && address.Zip == "90404" && address.StreetAddress == null
@@ -306,7 +391,6 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 
             TaxJarCalculator calculator = new(restClientMock.Object, converterStub, "");
 
-
             await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.GetTaxRate(addressStub));
         }
 
@@ -337,14 +421,6 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        [DataRow(null)]
-        [DataRow("2022-01-24")]
-        public async Task GetTaxRate_TestHeaders(string? version)
-        {
-            Assert.Fail();
-        }
-
-        [TestMethod()]
         [DataRow("")]
         [DataRow(null)]
         public async Task GetTaxRate_ZipOnly_UsTaxDecimal(string? otherElements)
@@ -372,7 +448,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             Mock<IHttpRestClient> restClientMock = new();
             restClientMock.Setup(client => client.GetJsonResponse(
                 string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>?>(val => val == null || !val.Any()),
-                It.IsAny<IEnumerable<KeyValuePair<string, string>>>()
+                It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
 
             IJsonConverter jsonConverter = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<RatesResponseWrapper>(responseBody) == ratesResponse);
@@ -381,14 +457,16 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 address => address.Country == otherElements && address.City == otherElements && address.State == otherElements && address.Zip == zip && address.StreetAddress == otherElements
             );
 
-            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, "");
+            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, apiKey);
 
 
             Assert.AreEqual(0.0975m, await calculator.GetTaxRate(addressStub));
         }
 
         [TestMethod()]
-        public async Task GetTaxRate_UsAddress_CorrectDecimal()
+        [DataRow(null)]
+        [DataRow("2022-01-24")]
+        public async Task GetTaxRate_UsAddress_CorrectDecimal(string? version)
         {
             string zip = "05495-2086";
             string country = "US";
@@ -425,8 +503,8 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             };
             Mock<IHttpRestClient> restClientMock = new();
             restClientMock.Setup(client => client.GetJsonResponse(
-                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => !val.Except(parameters).Any()),
-                It.IsAny<IEnumerable<KeyValuePair<string, string>>>()
+                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
+                It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, version))
             )).ReturnsAsync(response);
 
             IJsonConverter jsonConverter = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<RatesResponseWrapper>(responseBody) == ratesResponse);
@@ -435,7 +513,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 address => address.Country == country && address.City == city && address.State == state && address.Zip == zip && address.StreetAddress == street
             );
 
-            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, "");
+            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, apiKey, version);
 
             Assert.AreEqual(0.07m, await calculator.GetTaxRate(addressStub));
         }
@@ -472,8 +550,8 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             };
             Mock<IHttpRestClient> restClientMock = new();
             restClientMock.Setup(client => client.GetJsonResponse(
-                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => !val.Except(parameters).Any()),
-                It.IsAny<IEnumerable<KeyValuePair<string, string>>>()
+                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
+                It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
 
             IJsonConverter jsonConverter = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<RatesResponseWrapper>(responseBody) == ratesResponse);
@@ -482,7 +560,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 address => address.Country == country && address.City == city && address.State == state && address.Zip == zip && address.StreetAddress == street
             );
 
-            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, "");
+            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, apiKey);
 
             Assert.AreEqual(0.13m, await calculator.GetTaxRate(addressStub));
         }
@@ -518,8 +596,8 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             };
             Mock<IHttpRestClient> restClientMock = new();
             restClientMock.Setup(client => client.GetJsonResponse(
-                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => !val.Except(parameters).Any()),
-                It.IsAny<IEnumerable<KeyValuePair<string, string>>>()
+                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
+                It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
 
             IJsonConverter jsonConverter = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<RatesResponseWrapper>(responseBody) == ratesResponse);
@@ -528,7 +606,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 address => address.Country == country && address.City == city && address.State == state && address.Zip == zip && address.StreetAddress == street
             );
 
-            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, "");
+            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, apiKey);
 
             Assert.AreEqual(0.1m, await calculator.GetTaxRate(addressStub));
         }
@@ -563,8 +641,8 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             };
             Mock<IHttpRestClient> restClientMock = new();
             restClientMock.Setup(client => client.GetJsonResponse(
-                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => !val.Except(parameters).Any()),
-                It.IsAny<IEnumerable<KeyValuePair<string, string>>>()
+                string.Format(ratesUri, zip), It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckParametersExpected(val, parameters)),
+                It.Is<IEnumerable<KeyValuePair<string, string>>>(val => CheckHeadersExpected(val, apiKey, null))
             )).ReturnsAsync(response);
 
             IJsonConverter jsonConverter = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<RatesResponseWrapper>(responseBody) == ratesResponse);
@@ -573,7 +651,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
                 address => address.Country == country && address.City == city && address.State == null && address.Zip == zip && address.StreetAddress == street
             );
 
-            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, "");
+            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverter, apiKey);
 
             Assert.AreEqual(0.2m, await calculator.GetTaxRate(addressStub));
         }
@@ -692,49 +770,263 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
         }
 
         [TestMethod()]
-        public void CalculateTaxes_JsonConverter_SerializationError_ThrowsServiceInternalException()
+        [DataRow(-5.0)]
+        [DataRow(0.0)]
+        public async Task CalculateTaxes_AmountNotPositive_ThrowsServiceInputException(double amount)
         {
-            Assert.Fail();
+            TaxJarCalculator calculator = CalculatorWithStubs();
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == "US" && address.City == "Test" && address.State == "MD" && address.Zip == "21045" && address.StreetAddress == "123 E Main St"
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == "US" && address.City == "Test" && address.State == "MD" && address.Zip == "12345" && address.StreetAddress == "123 E Main St"
+            );
+
+            await Assert.ThrowsExceptionAsync<ServiceInputException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, Convert.ToDecimal(amount), 5m));
         }
 
         [TestMethod()]
-        public void CalculateTaxes_JsonConverter_DeserializationError_ThrowsServiceInternalException()
+        public async Task CalculateTaxes_JsonConverter_SerializationError_ThrowsServiceInternalException()
         {
-            Assert.Fail();
+            string fromCountry = "US";
+            string fromCity = "La Jolla";
+            string fromState = "CA";
+            string fromZip = "92093";
+            string fromStreet = "9500 Gilman Drive";
+            string toCountry = "US";
+            string toCity = "Los Angeles";
+            string toState = "CA";
+            string toZip = "90002";
+            string toStreet = "1335 E 103rd St";
+            decimal orderTotal = 16.5m;
+            decimal shipping = 1.5m;
+
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == fromCountry && address.City == fromCity && address.State == fromState && address.Zip == fromZip && address.StreetAddress == fromStreet
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == toCountry && address.City == toCity && address.State == toState && address.Zip == toZip && address.StreetAddress == toStreet
+            );
+
+            Mock<IJsonConverter> jsonConverterMock = new();
+            jsonConverterMock.Setup(json => json.SerializeObject(It.IsAny<object>())).Throws<SerializationException>();
+
+            TaxJarCalculator calculator = new(Mock.Of<IHttpRestClient>(), jsonConverterMock.Object, "");
+
+            await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, orderTotal, shipping));
         }
 
         [TestMethod()]
-        public void CalculateTaxes_RestHttpClient_RequestException_ThrowsServiceInternalException()
+        public async Task CalculateTaxes_JsonConverter_DeserializationError_ThrowsServiceInternalException()
         {
-            Assert.Fail();
+            string fromCountry = "US";
+            string fromCity = "La Jolla";
+            string fromState = "CA";
+            string fromZip = "92093";
+            string fromStreet = "9500 Gilman Drive";
+            string toCountry = "US";
+            string toCity = "Los Angeles";
+            string toState = "CA";
+            string toCounty = "LOS ANGELES";
+            string toZip = "90002";
+            string toStreet = "1335 E 103rd St";
+            decimal orderTotal = 16.5m;
+            decimal shipping = 1.5m;
+            decimal taxAmount = 1.35m;
+
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == fromCountry && address.City == fromCity && address.State == fromState && address.Zip == fromZip && address.StreetAddress == fromStreet
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == toCountry && address.City == toCity && address.State == toState && address.Zip == toZip && address.StreetAddress == toStreet
+            );
+
+            string requestBody = TaxesRequestJson(fromCountry, fromZip, fromState, fromCity, fromStreet, toZip, toState, toCity, toStreet, orderTotal, shipping);
+            string responseBody = TaxesResponseJson(orderTotal, shipping, taxAmount, true, false, "destination", toCountry, state: toState, county: toCounty, city: toCity.ToUpper());
+
+            Mock<IJsonConverter> jsonConverterMock = new();
+            jsonConverterMock.Setup(json => json.SerializeObject(It.IsAny<object>())).Returns(requestBody);
+            jsonConverterMock.Setup(json => json.DeserializeObject<TaxesResponseWrapper>(It.IsAny<string>())).Throws<DeserializationException>();
+
+            IHttpRestResponse response = Mock.Of<IHttpRestResponse>(
+                response => response.IsSuccess == true && response.StatusCode == 200 && response.CodeReason == "OK"
+                && response.GetBodyAsync().Result == responseBody);
+
+            Mock<IHttpRestClient> restClientMock = new();
+            restClientMock.Setup(client => client.JsonPostJsonResponse(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
+            )).ReturnsAsync(response);
+
+            TaxJarCalculator calculator = new(restClientMock.Object, jsonConverterMock.Object, "");
+
+            await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, orderTotal, shipping));
         }
 
         [TestMethod()]
-        public void CalculateTaxes_AuthUnsuccessfulResponse_ThrowsServiceConfigurationException()
+        public async Task CalculateTaxes_RestHttpClient_RequestException_ThrowsServiceInternalException()
         {
-            Assert.Fail();
+            string fromCountry = "US";
+            string fromCity = "La Jolla";
+            string fromState = "CA";
+            string fromZip = "92093";
+            string fromStreet = "9500 Gilman Drive";
+            string toCountry = "US";
+            string toCity = "Los Angeles";
+            string toState = "CA";
+            string toZip = "90002";
+            string toStreet = "1335 E 103rd St";
+            decimal orderTotal = 16.5m;
+            decimal shipping = 1.5m;
+
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == fromCountry && address.City == fromCity && address.State == fromState && address.Zip == fromZip && address.StreetAddress == fromStreet
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == toCountry && address.City == toCity && address.State == toState && address.Zip == toZip && address.StreetAddress == toStreet
+            );
+
+            Mock<IHttpRestClient> restClientMock = new();
+            restClientMock.Setup(client => client.JsonPostJsonResponse(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
+            )).ThrowsAsync(new RequestException());
+
+            IJsonConverter converterStub = Mock.Of<IJsonConverter>();
+            TaxJarCalculator calculator = new(restClientMock.Object, converterStub, "");
+
+            await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, orderTotal, shipping));
         }
 
         [TestMethod()]
-        public void CalculateTaxes_ErrorResponse_ThrowsServiceInternalException()
+        [DynamicData(nameof(AuthErrorResults), DynamicDataSourceType.Method)]
+        public async Task CalculateTaxes_AuthUnsuccessfulResponse_ThrowsServiceConfigurationException(int errorCode, string errorMessage, string errorDetail)
         {
-            Assert.Fail();
+            string fromCountry = "US";
+            string fromCity = "La Jolla";
+            string fromState = "CA";
+            string fromZip = "92093";
+            string fromStreet = "9500 Gilman Drive";
+            string toCountry = "US";
+            string toCity = "Los Angeles";
+            string toState = "CA";
+            string toZip = "90002";
+            string toStreet = "1335 E 103rd St";
+            decimal orderTotal = 16.5m;
+            decimal shipping = 1.5m;
+
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == fromCountry && address.City == fromCity && address.State == fromState && address.Zip == fromZip && address.StreetAddress == fromStreet
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == toCountry && address.City == toCity && address.State == toState && address.Zip == toZip && address.StreetAddress == toStreet
+            );
+
+            string responseJson = ErrorResponse(errorCode, errorMessage, errorDetail);
+            IHttpRestResponse response = Mock.Of<IHttpRestResponse>(
+                response => response.IsSuccess == false && response.StatusCode == errorCode && response.CodeReason == errorDetail &&
+                response.GetBodyAsync().Result == responseJson
+            );
+
+            Mock<IHttpRestClient> restClientMock = new();
+            restClientMock.Setup(client => client.JsonPostJsonResponse(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
+            )).ReturnsAsync(response);
+
+            ErrorResponse decodedResponse = new() { Detail = errorDetail, ErrorName = errorMessage, Status = errorCode.ToString() };
+
+            IJsonConverter converterStub = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<ErrorResponse>(responseJson) == decodedResponse);
+
+            TaxJarCalculator calculator = new(restClientMock.Object, converterStub, "");
+
+            await Assert.ThrowsExceptionAsync<ServiceConfigurationException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, orderTotal, shipping));
+
+        }
+
+
+        [TestMethod()]
+        [DynamicData(nameof(DefinedErrorResults), DynamicDataSourceType.Method)]
+        public async Task CalculateTaxes_ErrorResponse_ThrowsServiceInternalException(int errorCode, string errorMessage, string errorDetail)
+        {
+            string fromCountry = "US";
+            string fromCity = "La Jolla";
+            string fromState = "CA";
+            string fromZip = "92093";
+            string fromStreet = "9500 Gilman Drive";
+            string toCountry = "US";
+            string toCity = "Los Angeles";
+            string toState = "CA";
+            string toZip = "90002";
+            string toStreet = "1335 E 103rd St";
+            decimal orderTotal = 16.5m;
+            decimal shipping = 1.5m;
+
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == fromCountry && address.City == fromCity && address.State == fromState && address.Zip == fromZip && address.StreetAddress == fromStreet
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == toCountry && address.City == toCity && address.State == toState && address.Zip == toZip && address.StreetAddress == toStreet
+            );
+
+            string responseJson = ErrorResponse(errorCode, errorMessage, errorDetail);
+            IHttpRestResponse response = Mock.Of<IHttpRestResponse>(
+                response => response.IsSuccess == false && response.StatusCode == errorCode && response.CodeReason == errorDetail &&
+                response.GetBodyAsync().Result == responseJson
+            );
+
+            Mock<IHttpRestClient> restClientMock = new();
+            restClientMock.Setup(client => client.JsonPostJsonResponse(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
+            )).ReturnsAsync(response);
+
+            ErrorResponse decodedResponse = new() { Detail = errorDetail, ErrorName = errorMessage, Status = errorCode.ToString() };
+
+            IJsonConverter converterStub = Mock.Of<IJsonConverter>(converter => converter.DeserializeObject<ErrorResponse>(responseJson) == decodedResponse);
+
+            TaxJarCalculator calculator = new(restClientMock.Object, converterStub, "");
+
+            await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, orderTotal, shipping));
         }
 
         [TestMethod()]
-        public void CalculateTaxes_OtherInvalidResponse_ThrowsServiceInternalException()
+        public async Task CalculateTaxes_OtherInvalidResponse_ThrowsServiceInternalException()
         {
-            Assert.Fail();
-        }
+            string fromCountry = "US";
+            string fromCity = "La Jolla";
+            string fromState = "CA";
+            string fromZip = "92093";
+            string fromStreet = "9500 Gilman Drive";
+            string toCountry = "US";
+            string toCity = "Los Angeles";
+            string toState = "CA";
+            string toZip = "90002";
+            string toStreet = "1335 E 103rd St";
+            decimal orderTotal = 16.5m;
+            decimal shipping = 1.5m;
 
-        [TestMethod()]
-        [DataRow(null)]
-        [DataRow("2022-01-24")]
-        public async Task CalculateTaxes_TestHeaders(string? version)
-        {
-            Assert.Fail();
-        }
+            IAddress fromAddressStub = Mock.Of<IAddress>(
+                address => address.Country == fromCountry && address.City == fromCity && address.State == fromState && address.Zip == fromZip && address.StreetAddress == fromStreet
+            );
+            IAddress toAddressStub = Mock.Of<IAddress>(
+                address => address.Country == toCountry && address.City == toCity && address.State == toState && address.Zip == toZip && address.StreetAddress == toStreet
+            );
 
+            IHttpRestResponse response = Mock.Of<IHttpRestResponse>(
+                response => response.IsSuccess == false && response.StatusCode == 410 && response.CodeReason == "I'm a Teapot" &&
+                response.GetBodyAsync().Result == ""
+            );
+
+            Mock<IHttpRestClient> restClientMock = new();
+            restClientMock.Setup(client => client.JsonPostJsonResponse(
+                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IEnumerable<KeyValuePair<string, string>>?>()
+            )).ReturnsAsync(response);
+
+            Mock<IJsonConverter> converterMock = new();
+            converterMock.Setup(converter => converter.DeserializeObject<ErrorResponse>("")).Throws<DeserializationException>();
+
+            TaxJarCalculator calculator = new(restClientMock.Object, converterMock.Object, "");
+
+            await Assert.ThrowsExceptionAsync<ServiceInternalException>(() => calculator.CalculateTaxes(fromAddressStub, toAddressStub, orderTotal, shipping));
+
+        }
 
         [TestMethod()]
         public void CalculateTaxes_ToUsAddress_CorrectDecimal()

@@ -40,8 +40,12 @@ namespace TaxCalculator.ViewModels
             get => subTotal;
             set
             {
-                SetPropertyValue(ref subTotal, value);
+                bool valueChanged = SetPropertyValue(ref subTotal, value);
                 ResetTaxInfo();
+                if (valueChanged)
+                {
+                    (CalculateCommand as Command)?.ChangeCanExecute();
+                }
             }
         }
 
@@ -76,7 +80,14 @@ namespace TaxCalculator.ViewModels
         public bool IsPending
         {
             get => isPending;
-            set => SetPropertyValue(ref isPending, value);
+            set
+            {
+                bool valueChanged = SetPropertyValue(ref isPending, value);
+                if (valueChanged)
+                {
+                    (CalculateCommand as Command)?.ChangeCanExecute();
+                }
+            }
         }
 
         public IList<string> Countries => taxService.SupportedCountries().ToList();
@@ -88,7 +99,6 @@ namespace TaxCalculator.ViewModels
             Taxes = null;
             OriginTaxRate = null;
             DestinationTaxRate = null;
-            ErrorMessage = "";
         }
 
         private bool FromAddressHasRequired() => !string.IsNullOrEmpty(FromAddress.Country) && !string.IsNullOrEmpty(FromAddress.City) && 
@@ -102,6 +112,7 @@ namespace TaxCalculator.ViewModels
             CalculateCommand = new Command(
                 async () => {
                     IsPending = true;
+                    ErrorMessage = "";
                     (CalculateCommand as Command)?.ChangeCanExecute();
 
                     try
@@ -129,15 +140,14 @@ namespace TaxCalculator.ViewModels
                     }
 
                     IsPending = false;
-                    (CalculateCommand as Command)?.ChangeCanExecute();
                 },
-                () => FromAddressHasRequired() && ToAddressHasRequired() && !IsPending
+                () => FromAddressHasRequired() && ToAddressHasRequired() && !IsPending && SubTotal > 0
             );
             FromAddress.PropertyChanged += OnAddressChanged;
             ToAddress.PropertyChanged += OnAddressChanged;
         }
 
-        public void OnAddressChanged(object sender, PropertyChangedEventArgs e)
+        private void OnAddressChanged(object sender, PropertyChangedEventArgs e)
         {
             (CalculateCommand as Command)?.ChangeCanExecute();
             ResetTaxInfo();

@@ -3,13 +3,13 @@
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Responses
 {
     [DataContract]
-    internal class TaxesResponseWrapper
+    public class TaxesResponseWrapper
     {
         [DataMember(Name = "tax")]
         public TaxesResponse Tax { get; set; } = new TaxesResponse();
     }
     [DataContract]
-    internal class TaxesResponse
+    public class TaxesResponse
     {
         [DataMember(Name = "order_total_amount")]
         public decimal OrderTotal { get; set; }

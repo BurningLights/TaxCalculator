@@ -205,7 +205,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             }
         }
 
-        private void ThrowExceptionForInvalidCalculateTaxesInput(IAddress? fromAddress, IAddress toAddress)
+        private void ThrowExceptionForInvalidCalculateTaxesInput(IAddress? fromAddress, IAddress toAddress, decimal amount)
         {
             if (string.IsNullOrEmpty(toAddress.Country))
             {
@@ -227,11 +227,15 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar
             {
                 throw new ServiceInputException($"The To Address State is required when the country is {UNITED_STATES} or {CANADA}");
             }
+            if (amount <= 0)
+            {
+                throw new ServiceInputException("The Amount must be greater than zero");
+            }
         }
 
         public async Task<decimal> CalculateTaxes(IAddress? fromAddress, IAddress toAddress, decimal amount, decimal shipping)
         {
-            ThrowExceptionForInvalidCalculateTaxesInput(fromAddress, toAddress);
+            ThrowExceptionForInvalidCalculateTaxesInput(fromAddress, toAddress, amount);
 
             string requestBody;
             try
