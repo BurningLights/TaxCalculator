@@ -149,11 +149,15 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 }}}}";
         }
 
-        private static string TaxesRequestJson(string fromCountry, string? fromZip, string? fromState, string? fromCity, string? fromStreet, 
+        private static string TaxesRequestJson(string? fromCountry, string? fromZip, string? fromState, string? fromCity, string? fromStreet, 
             string toCountry, string? toZip, string? toState, string? toCity, string? toStreet, decimal amount, decimal shipping)
         {
             StringBuilder optionals = new();
             string optionTemplate = ",\n\"{0}\": \"{1}\"";
+            if (fromCountry != null)
+            {
+                optionals.Append(string.Format(optionTemplate, "from_country", fromCountry));
+            }
             if (fromState != null)
             {
                 optionals.Append(string.Format(optionTemplate, "from_state", fromState));
@@ -189,7 +193,6 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 
 
             return $@"{{
-""from_country"": ""{fromCountry}"",
 ""to_country"": ""{toCountry}"",
 ""amount"": {amount},
 ""shipping"": {shipping}{optionals}
@@ -257,7 +260,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             return hasHeaders;
         }
 
-        private static bool TaxRequestMatches(TaxesRequest value, string? fromCity, string? fromStreet, string? fromState, string fromCountry, string? fromZip,
+        private static bool TaxRequestMatches(TaxesRequest value, string? fromCity, string? fromStreet, string? fromState, string? fromCountry, string? fromZip,
             string? toCity, string? toStreet, string? toState, string toCountry, string? toZip, decimal orderAmount, decimal shipping)
         {
             return value.FromCity == fromCity && value.FromStreet == fromStreet && value.FromState == fromState && value.FromCountry == fromCountry && value.FromZip == fromZip &&
@@ -1086,9 +1089,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
             decimal taxRate = 0.1m;
             string taxSource = "destination";
 
-            IAddress fromAddressStub = Mock.Of<IAddress>(
-                address => address.Country == fromCountry && address.City == otherElement && address.State == otherElement && address.Zip == otherElement && address.StreetAddress == otherElement
-            );
+            IAddress? fromAddressStub = null;
             IAddress toAddressStub = Mock.Of<IAddress>(
                 address => address.Country == toCountry && address.City == otherElement && address.State == otherElement && address.Zip == otherElement && address.StreetAddress == otherElement
             );
@@ -1116,7 +1117,7 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Tests
 
             Mock<IJsonConverter> jsonConverterMock = new();
             jsonConverterMock.Setup(json => json.SerializeObject(It.Is<TaxesRequest>(
-                value => TaxRequestMatches(value, null, null, null, fromCountry, null, null, null, null, toCountry, null, orderAmount, shipping)
+                value => TaxRequestMatches(value, null, null, null, null, null, null, null, null, toCountry, null, orderAmount, shipping)
             ))).Returns(requestBody);
             jsonConverterMock.Setup(json => json.DeserializeObject<TaxesResponseWrapper>(It.Is<string>(val => val == responseBody))).Returns(deserializedResponse);
 
