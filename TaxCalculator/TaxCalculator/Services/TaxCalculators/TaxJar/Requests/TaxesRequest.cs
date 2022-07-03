@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
 {
     [DataContract]
-    internal class TaxesRequest
+    public class TaxesRequest
     {
         private string? fromCountry;
         private string? fromZip;
@@ -71,10 +71,12 @@ namespace TaxCalculator.Services.TaxCalculators.TaxJar.Requests
             ToState = toAddress.State;
             ToCity = toAddress.City;
             ToZip = toAddress.Zip;
+            ToStreet = toAddress.StreetAddress;
             FromCountry = fromAddress?.Country;
             FromState = fromAddress?.State;
             FromCity = fromAddress?.City;
             FromZip = fromAddress?.Zip;
+            FromStreet = fromAddress?.StreetAddress;
             Shipping = shipping;
             Amount = amount;
         }
