@@ -16,7 +16,7 @@ namespace TaxCalculator
             DependencyService.Register<IJsonConverter, NewtonsoftJsonConverter>();
             DependencyService.Register<IHttpRestClient, RestHttpClient>();
             DependencyService.RegisterSingleton<ITaxCalculator>(
-                new TaxJarCalculator(DependencyService.Get<IHttpRestClient>(), DependencyService.Get<IJsonConverter>(), "5da2f821eee4035db4771edab942a4cc")
+                new TaxJarCalculator(DependencyService.Get<IHttpRestClient>(), DependencyService.Get<IJsonConverter>(), "__TEST_TOKEN__")
             );
             DependencyService.RegisterSingleton<ITaxService>(new SimpleTaxService(DependencyService.Get<ITaxCalculator>()));
 
